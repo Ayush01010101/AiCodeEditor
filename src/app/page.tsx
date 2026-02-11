@@ -1,12 +1,20 @@
 'use client'
+import { useMutation } from "convex/react";
 import { useQuery } from "convex/react";
 import { api } from '../../convex/_generated/api';
+import { Button } from "@/components/ui/button";
+
 export default function Home() {
-  const tasks = useQuery(api.tasks.get);
+  const projects: any = useQuery(api.projects.get);
+  const create = useMutation(api.projects.create)
   return (
+
     <div className="flex min-h-screen items-center justify-center font-sans ">
-      <main className="flex min-h-screen flex-col items-center justify-between p-24">
-        {tasks?.map(({ _id, text }) => <div key={_id}>{text}</div>)}
+      <Button variant={'default'} onClick={() => create({ name: "hacker" })}>
+        Add new project
+      </Button>
+      <main className="flex min-h-screen flex-col items-center  justify-between p-24">
+
       </main>
     </div>
   );
