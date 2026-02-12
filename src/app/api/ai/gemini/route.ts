@@ -1,12 +1,16 @@
-import { google } from '@ai-sdk/google';
-import { generateText } from 'ai';
-import { NextResponse } from 'next/server';
+import { inngest } from "@/inngest/client";
+import { NextResponse } from "next/server";
 
-export async function POST(request: Request, responce: Response) {
-  const { text } = await generateText({
-    model: google('gemini-3-flash-preview'),
-    prompt: 'Write a vegetarian lasagna recipe for 4 people.',
+export const dynamic = "force-dynamic";
+
+export async function POST() {
+  // Send your event payload to Inngest
+  await inngest.send({
+    name: "api/ai/gemini",
+    data: {
+      email: "testUser@example.com",
+    },
   });
-  return NextResponse.json({ text })
-}
 
+  return NextResponse.json({ message: "Event sent!" });
+}

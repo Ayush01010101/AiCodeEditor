@@ -1,9 +1,16 @@
 import { inngest } from "@/inngest/client";
-export const helloWorld = inngest.createFunction(
-  { id: "hello-world" },
-  { event: "test/hello.world" },
+import { google } from "@ai-sdk/google";
+import { generateText } from "ai";
+export const gemini = inngest.createFunction(
+  { id: "gemini" },
+  { event: "api/ai/gemini" },
   async ({ event, step }) => {
-    await step.sleep("wait-a-moment", "1s");
-    return { message: `Hello ${event.data.email}!` };
+
+    const { text } = await generateText({
+      model: google('gemini-3-flash-preview'),
+      prompt: 'Hello world',
+    });
+
+    return text;
   },
 );
