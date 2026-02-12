@@ -12,6 +12,15 @@ export default defineSchema({
         v.literal("Done"),
         v.literal("Pending")
       )
-    )
+    ),
+    exportStatus: v.optional(
+      v.union(
+        v.literal("Failed"),
+        v.literal("Done"),
+        v.literal("Pending")
+      )
+    ),
+    exportRepoURL: v.optional(v.string()),
+
   }).index('by_owner', ["ownerId"]),
 }); 

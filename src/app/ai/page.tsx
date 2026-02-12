@@ -11,7 +11,7 @@ export default function Page() {
       <Button className="text-2xl p-3 m-4" disabled={loading} onClick={async () => {
         setloading(true)
         const response = await fetch('/api/ai/gemini', { method: 'POST' })
-
+        setloading(false)
       }}>{loading ? 'Registering...' : 'background task'}</Button>
     </div >
   )
