@@ -1,19 +1,9 @@
 import type { Metadata } from "next";
-import { ThemeProvider } from "@/components/theme-provider";
+import Providers from "@/components/Providers";
 import { Geist, Geist_Mono } from "next/font/google";
 import { dark } from "@clerk/themes";
 import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
-import {
-  SignInButton,
-  SignUpButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from '@clerk/nextjs'
-import { ConvexClientProvider } from "./ConvexClientProvider";
-import { ConvexProviderWithClerk } from "convex/react-clerk";
-
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -40,15 +30,15 @@ export default function RootLayout({
         theme: dark
       }}
     >
-
       <html lang="en" suppressHydrationWarning>
-
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
+          <Providers>
+            {children}
+          </Providers>
         </body>
       </html>
-
     </ClerkProvider >
   );
 }
