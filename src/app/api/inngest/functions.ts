@@ -13,7 +13,6 @@ export const gemini = inngest.createFunction(
 
     if (extractedUrlArray.length > 0) {
       await step.run("scraping", async () => {
-
         const firecrawl = new Firecrawl({ apiKey: process.env.FIRECRAWAL_API_KEY! });
         const result = extractedUrlArray.map((url) => {
           return firecrawl.scrape(url, {
@@ -22,10 +21,8 @@ export const gemini = inngest.createFunction(
         })
 
         const results = await Promise.all(result)
-
         finalprompt = `context ${results} , user question ${prompt}`
         console.log('finalprompt', finalprompt)
-
         return results
       });
     }

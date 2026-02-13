@@ -16,6 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Ai Code Editor",
+  icons: '/logo.svg',
   description: "Ai code editor",
 };
 

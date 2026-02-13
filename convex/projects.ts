@@ -14,10 +14,11 @@ export const create = mutation({
 export const get = query({
   args: {},
   handler: async (ctx) => {
-    const auth = await ctx.auth.getUserIdentity();
+    const auth = await verifyAuth(ctx);
     if (!auth) {
       return []
     }
+
     const Projectget = await ctx.db.query("Project")
       .withIndex('by_owner', (q) => q.eq('ownerId', auth.subject))
       .collect();
@@ -27,4 +28,19 @@ export const get = query({
 });
 
 
+export const getPartial = query({
+  args: {
+    limit: v.number()
+  },
+  handler: async (ctx, { limit }) => {
+    const auth = await verifyAuth(ctx);
+    if (!auth) {
+      return []
+    }
+    const Projectget = await ctx.db.query("Project")
+      .withIndex('by_owner', (q) => q.eq('ownerId', auth))
+      .take(limit);
+    return Projectget
+  },
+});
 
