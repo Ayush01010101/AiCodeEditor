@@ -7,17 +7,34 @@ export const gemini = inngest.createFunction(
   { event: "api/ai/gemini" },
   async ({ event, step }) => {
     const { prompt } = event.data;
-    await step.run("scraping", async () => {
-      const firecrawl = new Firecrawl({ apiKey: process.env.FIRECRAWAL_API_KEY! });
-      const doc = await firecrawl.scrape('https://amanyx.vercel.app/', { formats: ['markdown'] });
-      return doc
-    });
+    let finalprompt: string
+    const urlRegex = /\bhttps?:\/\/[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(?:\/[^\s]*)?\b/g;
+    const extractedUrlArray: [] = prompt.match(urlRegex) || [];
 
+    if (extractedUrlArray.length > 0) {
+      await step.run("scraping", async () => {
+
+        const firecrawl = new Firecrawl({ apiKey: process.env.FIRECRAWAL_API_KEY! });
+        const result = extractedUrlArray.map((url) => {
+          return firecrawl.scrape(url, {
+            formats: ["markdown"],
+          })
+        })
+
+        const results = await Promise.all(result)
+
+        finalprompt = `context ${results} , user question ${prompt}`
+        console.log('finalprompt', finalprompt)
+
+        return results
+      });
+    }
+
+    //extract the url form the prompt
     await step.run('LLM-gemini', async () => {
-
       const { text } = await generateText({
         model: google('gemini-3-flash-preview'),
-        prompt: prompt,
+        prompt: finalprompt ? finalprompt : prompt,
       });
 
       return text;

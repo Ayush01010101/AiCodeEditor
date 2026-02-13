@@ -4,9 +4,9 @@ import { NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
-  const { prompt } = req.body;
+  const { prompt } = await req.json();
   if (!prompt) {
-    return NextResponse.error();
+    return NextResponse.json({ error: "Prompt is required" }, { status: 400 });
   }
   await inngest.send({
     name: "api/ai/gemini",

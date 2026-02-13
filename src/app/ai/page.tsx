@@ -10,7 +10,14 @@ export default function Page() {
       {loading ? <p>loading</p> : <p>not loading</p>}
       <Button className="text-2xl p-3 m-4" disabled={loading} onClick={async () => {
         setloading(true)
-        const response = await fetch('/api/ai/gemini', { method: 'POST' })
+        const response = await fetch('/api/ai/gemini', {
+          method: 'POST', body: JSON.stringify(
+            {
+              prompt: "hey what is your name ?"
+            }
+
+          )
+        })
         setloading(false)
       }}>{loading ? 'Registering...' : 'background task'}</Button>
     </div >
