@@ -20,7 +20,10 @@ export default defineSchema({
         v.literal("Pending")
       )
     ),
-    exportRepoURL: v.optional(v.string()),
 
-  }).index('by_owner', ["ownerId"]),
+    exportRepoURL: v.optional(v.string()),
+    updatedAt: v.number()
+
+  }).index("by_owner_updatedAt", ["ownerId", "updatedAt"])
+  ,
 }); 

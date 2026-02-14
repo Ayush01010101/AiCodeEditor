@@ -1,15 +1,16 @@
+"use client"
 import { GithubIcon } from "@/components/GithubIcon"
 import Projectlist from "./Project-list"
 import { PlusIcon } from "@/components/PlusIcon"
 import { cn } from "@/lib/utils"
 import { useMutation } from "convex/react"
 import Image from "next/image"
-import { useCreateProject } from "../Hooks/ProjectsCustomHooks"
 import { api } from "../../../../convex/_generated/api"
 import { generateUser } from "./RandomProjectDataGenerator"
-
+import { useRouter } from "next/navigation"
 const Projectview = () => {
   const createproject = useMutation(api.projects.create)
+  const router = useRouter()
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] px-4 py-12">
       <div className="text-center mb-12 flex flex-col items-center">
@@ -37,7 +38,13 @@ const Projectview = () => {
           "border-border/50 hover:border-primary/50"
         )}>
           <div className="absolute inset-0 bg-linear-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-          <div onClick={() => { createproject({ name: generateUser().name }) }} className="relative cursor-pointer z-10 bg-primary/10 p-6 rounded-2xl mb-6 group-hover:bg-primary/20 transition-colors">
+          <div onClick={async () => {
+            const projectId = await createproject({
+              name: generateUser().name
+            })
+            router.push(`/create/${projectId}`)
+          }} className="relative cursor-pointer z-10 bg-primary/10 p-6 rounded-2xl mb-6 group-hover:bg-primary/20 transition-colors">
+
             <PlusIcon isAnimated={true} className="text-primary" size={48} />
           </div>
           <h2 className="relative z-10 text-2xl font-semibold mb-3">Create Project</h2>
