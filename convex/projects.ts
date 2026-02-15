@@ -45,3 +45,25 @@ export const getPartial = query({
   },
 });
 
+export const getById = query({
+  args: {
+    id: v.id("Project"),
+  },
+  handler: async (ctx, { id }) => {
+    const auth = await verifyAuth(ctx);
+    if (!auth) {
+      return null;
+    }
+
+    const project = await ctx.db.get(id);
+    if (!project) {
+      return null;
+    }
+
+    if (project.ownerId !== auth) {
+      return null;
+    }
+
+    return project;
+  },
+})

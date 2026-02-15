@@ -1,3 +1,4 @@
+'use client'
 import type { FC } from "react"
 import Image from "next/image"
 import {
@@ -7,10 +8,13 @@ import {
 } from "@/components/ui/tooltip"
 import { UserButton } from "@clerk/nextjs"
 import { CloudUploadIcon } from "@/components/CloudUploadIcon"
+const ta = require("time-ago") as { ago: (date: any, short?: boolean) => string };
+const Navbar: FC<{ Updatedtime: number | undefined }> = ({ Updatedtime }) => {
 
-const Navbar: FC = () => {
+
+
   return (
-    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 py-3 flex justify-between items-center transition-all duration-300">
+    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 px-4 py-3 flex justify-between items-center transition-all duration-300">
       <div className="flex items-center gap-2 font-bold  transition-opacity cursor-pointer group">
         <Image
           src="/logo.svg"
@@ -26,7 +30,7 @@ const Navbar: FC = () => {
             <CloudUploadIcon size={24} className="text-muted-foreground transition-colors" />
           </TooltipTrigger>
           <TooltipContent>
-            <p className="text-sm">Updated 1 Min Ago</p>
+            <p className="text-sm">{Updatedtime ? ta.ago(Updatedtime) : "Loading..."}</p>
           </TooltipContent>
         </Tooltip>
       </div>
