@@ -6,7 +6,7 @@
 import * as Sentry from "@sentry/nextjs";
 
 Sentry.init({
-  dsn: "https://0e37e482e8a54409779dc630bbf538b5@o4510862230421504.ingest.de.sentry.io/4510885590401104",
+  // dsn: "https://0e37e482e8a54409779dc630bbf538b5@o4510862230421504.ingest.de.sentry.io/4510885590401104",
   // Enable logs to be sent to Sentry
   enableLogs: true,
   // Enable sending user PII (Personally Identifiable Information)

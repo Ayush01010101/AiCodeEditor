@@ -27,6 +27,7 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "tailwind-merge": "^3.4.0",
+    "time-ago": "^0.2.1",
     "unique-names-generator": "^4.7.1"
   },
   "devDependencies": {

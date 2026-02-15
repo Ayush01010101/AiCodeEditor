@@ -9,6 +9,8 @@ import { LoaderIcon } from "@/components/LoaderIcon";
 import { api } from "../../../../convex/_generated/api";
 import { useQuery } from "convex/react";
 
+const ta = require("time-ago") as { ago: (date: any, short?: boolean) => string };
+
 interface ProjectlistProps {
   Viewall: () => void;
 }
@@ -63,11 +65,7 @@ const Projectlist: FC<ProjectlistProps> = ({ Viewall }) => {
                 {mostrecent.name}
               </h3>
               <p className="text-xs text-muted-foreground">
-                {new Date(mostrecent._creationTime).toLocaleDateString('en-US', {
-                  month: 'short',
-                  day: 'numeric',
-                  year: 'numeric'
-                })}
+                {ta.ago(mostrecent._creationTime, true)} ago
               </p>
             </div>
           </div>
@@ -87,7 +85,7 @@ const Projectlist: FC<ProjectlistProps> = ({ Viewall }) => {
 
         <div className="flex flex-col gap-1">
           {partialProject.length > 0 ? (
-            partialProject.map((project, index) => (
+            partialProject.map((project) => (
               <div key={project._id} className="group">
                 <div className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-accent/40 transition-all duration-200 cursor-pointer">
                   <h3
@@ -101,10 +99,7 @@ const Projectlist: FC<ProjectlistProps> = ({ Viewall }) => {
                     <ChevronUpIcon className="transform rotate-90 opacity-40" size={16} />
                   </h3>
                   <span className="text-[11px] text-muted-foreground tabular-nums">
-                    {new Date(project._creationTime).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric'
-                    })}
+                    {ta.ago(project._creationTime, true)} ago
                   </span>
                 </div>
               </div>
