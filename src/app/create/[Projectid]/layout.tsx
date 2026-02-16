@@ -5,12 +5,11 @@ import { useParams } from "next/navigation"
 import { api } from "../../../../convex/_generated/api"
 import { useQuery } from "convex/react"
 import type { Id } from "../../../../convex/_generated/dataModel"
-import { useEffect } from "react"
 const Layout = ({ children }: { children: React.ReactNode, }) => {
   const params = useParams()
   const Projectid = params?.Projectid
 
-  if (!Projectid) {
+  if (!Projectid || Array.isArray(Projectid)) {
     return (<>
       loading...
     </>)
@@ -18,12 +17,12 @@ const Layout = ({ children }: { children: React.ReactNode, }) => {
 
   const projectdata = useQuery(api.projects.getById, { id: Projectid as Id<"Project"> })
   return (
-    <>
-      <TooltipProvider>
+    <TooltipProvider>
+      <div >
         <Navbar Updatedtime={projectdata?.updatedAt} />
         {children}
-      </TooltipProvider>
-    </>
+      </div>
+    </TooltipProvider >
   )
 }
 
