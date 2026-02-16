@@ -1,3 +1,3 @@
 export default function ConversationView() {
-  return <div className="h-screen w-[40vw] check">conversation</div>
+  return <div className="text-3xl">conversation</div>
 }

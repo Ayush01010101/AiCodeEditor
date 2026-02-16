@@ -67,3 +67,25 @@ export const getById = query({
     return project;
   },
 })
+
+export const rename = mutation({
+  args: {
+    id: v.id("Project"),
+    name: v.string(),
+  },
+  handler: async (ctx, { id, name }) => {
+    const auth = await verifyAuth(ctx);
+
+    const project = await ctx.db.get(id);
+    if (!project) {
+      return null;
+    }
+
+    if (project.ownerId !== auth) {
+      return null;
+    }
+
+    await ctx.db.patch(id, { name, updatedAt: Date.now() });
+    return await ctx.db.get(id);
+  },
+});

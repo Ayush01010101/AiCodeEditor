@@ -8,9 +8,11 @@ import { Separator } from 'react-resizable-panels'
 const CreateProjectPage = () => {
   return (
     <Group>
-      <Panel minSize={100} maxSize={400}><ConversationView /></Panel>
+      <Panel maxSize={500} ><ConversationView /></Panel>
       <Separator />
-      <Panel><CodeView /></Panel>
+      <div className='border-l-2 h-screen'></div>
+      <Panel
+      ><CodeView /></Panel>
     </Group >
 
   )

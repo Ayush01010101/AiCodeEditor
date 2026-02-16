@@ -19,7 +19,7 @@ const Layout = ({ children }: { children: React.ReactNode, }) => {
   return (
     <TooltipProvider>
       <div >
-        <Navbar Updatedtime={projectdata?.updatedAt} />
+        <Navbar ProjectName={projectdata?.name} Updatedtime={projectdata?.updatedAt} />
         {children}
       </div>
     </TooltipProvider >
