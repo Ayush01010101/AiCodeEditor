@@ -1,3 +1,65 @@
+'use client'
+import { useState } from "react"
+import { cn } from "@/lib/utils"
+type Tab = "code" | "preview"
 export default function CodeView() {
-  return <div  >CodeView</div>
+  const [tab, setTab] = useState<Tab>("code")
+  return (
+    <div className="w-full">
+      <div className="flex items-center gap-1 h-12 px-3 border-b border-border/60 bg-background/70 backdrop-blur">
+        <button
+          type="button"
+          onClick={() => setTab("code")}
+          className={cn(
+            "relative h-8 px-3 rounded-md text-sm font-medium transition-colors",
+            tab === "code"
+              ? "bg-accent text-foreground"
+              : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+          )}
+        >
+          Code
+        </button>
+        <button
+          type="button"
+          onClick={() => setTab("preview")}
+          className={cn(
+            "relative h-8 px-3 rounded-md text-sm font-medium transition-colors",
+            tab === "preview"
+              ? "bg-accent text-foreground"
+              : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+          )}
+        >
+          Preview
+        </button>
+      </div>
+      <div className="p-4">
+        <div
+          className={cn(
+            tab === "code" ? "block" : "hidden",
+            "rounded-xl border border-border/60 bg-card"
+          )}
+        >
+          <div className="px-3 py-2 border-b border-border/60 text-xs text-muted-foreground">
+            Code
+          </div>
+          <div className="p-3 font-mono text-sm text-foreground/90 min-h-[240px]">
+            {/* your code editor div */}
+          </div>
+        </div>
+        <div
+          className={cn(
+            tab === "preview" ? "block" : "hidden",
+            "rounded-xl border border-border/60 bg-card"
+          )}
+        >
+          <div className="px-3 py-2 border-b border-border/60 text-xs text-muted-foreground">
+            Preview
+          </div>
+          <div className="p-3 min-h-[240px]">
+            {/* your preview div */}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
