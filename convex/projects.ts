@@ -22,7 +22,6 @@ export const get = query({
     const Projectget = await ctx.db.query("Project")
       .withIndex('by_owner_updatedAt', (q) => q.eq('ownerId', auth))
       .collect();
-
     return Projectget
   },
 });
@@ -84,7 +83,6 @@ export const rename = mutation({
     if (project.ownerId !== auth) {
       return null;
     }
-
     await ctx.db.patch(id, { name, updatedAt: Date.now() });
     return await ctx.db.get(id);
   },

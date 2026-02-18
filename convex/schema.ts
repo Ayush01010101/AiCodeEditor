@@ -1,7 +1,6 @@
 import { defineTable, defineSchema } from "convex/server";
 import { v } from "convex/values";
 
-
 export default defineSchema({
   Project: defineTable({
     name: v.string(),
@@ -26,4 +25,18 @@ export default defineSchema({
 
   }).index("by_owner_updatedAt", ["ownerId", "updatedAt"])
   ,
+
+  Files: defineTable({
+
+    name: v.string(),
+    projectId: v.id("Project"),
+    type: v.union(v.literal("folder"), v.literal("file")),
+    parentId: v.optional(v.string()),
+    content: v.optional(v.string()),
+    binaryFiles: v.optional(v.id("_storage")),
+    updatedAt: v.number()
+  })
+    .index("by_ProjectId", ["projectId"])
+    .index("by_parentId", ["parentId"])
+    .index('by_ProjectId_parentId', ['projectId', 'parentId'])
 }); 

@@ -1,5 +1,6 @@
 'use client'
 import { useState } from "react"
+import { GithubIcon } from "@/components/GithubIcon"
 import { cn } from "@/lib/utils"
 type Tab = "code" | "preview"
 export default function CodeView() {
@@ -31,6 +32,14 @@ export default function CodeView() {
         >
           Preview
         </button>
+        <button className={cn(
+          "h-8 absolute right-10 flex items-center gap-2 px-3 rounded-md text-sm font-medium transition-colors",
+          "bg-accent text-foreground"
+        )}>
+          <GithubIcon size={16} />
+          Export
+
+        </button>
       </div>
       <div className="p-4">
         <div
@@ -59,7 +68,8 @@ export default function CodeView() {
             {/* your preview div */}
           </div>
         </div>
+
       </div>
-    </div>
+    </div >
   )
 }
