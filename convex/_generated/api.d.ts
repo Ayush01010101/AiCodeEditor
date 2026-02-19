@@ -12,6 +12,7 @@ import type * as files from "../files.js";
 import type * as projects from "../projects.js";
 import type * as tasks from "../tasks.js";
 import type * as verifyAuth from "../verifyAuth.js";
+import type * as verifyOwner from "../verifyOwner.js";
 
 import type {
   ApiFromModules,
@@ -24,6 +25,7 @@ declare const fullApi: ApiFromModules<{
   projects: typeof projects;
   tasks: typeof tasks;
   verifyAuth: typeof verifyAuth;
+  verifyOwner: typeof verifyOwner;
 }>;
 
 /**

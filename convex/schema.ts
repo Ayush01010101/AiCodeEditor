@@ -35,8 +35,6 @@ export default defineSchema({
     content: v.optional(v.string()),
     binaryFiles: v.optional(v.id("_storage")),
     updatedAt: v.number()
-  })
-    .index("by_ProjectId", ["projectId"])
-    .index("by_parentId", ["parentId"])
-    .index('by_ProjectId_parentId', ['projectId', 'parentId'])
+  }).index("by_Projectname", ['name'])
+    .index("by_ProjectId", ["projectId"]).index("by_parentId", ["parentId"]).index('by_ProjectId_parentId', ['projectId', 'parentId'])
 }); 
