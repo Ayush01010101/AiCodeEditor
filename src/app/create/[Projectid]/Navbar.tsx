@@ -21,7 +21,6 @@ const Navbar: FC<{ Updatedtime: number | undefined, ProjectName: string | undefi
   const params = useParams()
   const Projectid = params?.Projectid as Id<"Project"> | undefined
   const renameProject = useMutation(api.projects.rename)
-
   const [isEditing, setIsEditing] = useState(false)
   const [name, setName] = useState(ProjectName || "")
   const inputRef = useRef<HTMLInputElement>(null)

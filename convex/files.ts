@@ -6,8 +6,6 @@ import { query } from "./_generated/server";
 import { v } from "convex/values";
 import { useQuery } from "convex/react";
 
-
-
 const getFiles = query({
   args: { projectId: v.id("Project") },
   handler: async (ctx, args) => {
@@ -16,9 +14,7 @@ const getFiles = query({
     if (!project) {
       throw new Error('Project not accessible')
     }
-
     return await ctx.db.query("Files").withIndex('by_ProjectId', (q) => q.eq('projectId', args.projectId)).collect();
-
   },
 });
 
@@ -31,8 +27,6 @@ const getFilebyId = query({
     return file.file;
   }
 })
-
-
 
 
 const getFolderContent = query({
@@ -205,5 +199,9 @@ export {
   rename,
   updateFileContent,
   getFiles,
-  getFilebyId
+  getFilebyId,
+  getFolderContent
+
 }
+
+
