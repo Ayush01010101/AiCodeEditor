@@ -1,5 +1,6 @@
 import { useQuery, useMutation } from "convex/react"
 import { api } from "../../../../../convex/_generated/api"
+import { FunctionReturnType } from "convex/server";
 import { Id } from "../../../../../convex/_generated/dataModel";
 
 interface createfileProps {
@@ -9,19 +10,18 @@ interface createfileProps {
   projectId: Id<'Project'>;
   parentId?: Id<'Files'>;
 }
+const usegetFolderFiles = (
+  projectId: Id<"Project">,
+  parentId?: Id<"Files">
+) => {
+  const data = useQuery(api.files.getFolderContent, {
+    projectId,
+    parentId,
+  });
 
-const usegetFolderFiles = (projectId: Id<'Project'>, parentId?: Id<'Files'>) => {
-  async function getFolderContent() {
-    const args = parentId ? { projectId: projectId, parentId: parentId } : { projectId: projectId }
-    const contentfile = useQuery(api.files.getFolderContent, args);
-    return contentfile
-  }
-
-  return getFolderContent
-
-}
-
-
+  // returning function as you wanted
+  return () => data;
+};
 const useCreatefile = ({ name, type, content, parentId, projectId }: createfileProps) => {
 
   console.log('usecreatefile trigger')
