@@ -36,21 +36,22 @@ const getFolderContent = query({
   },
   handler: async (ctx, args) => {
     const ownerId = await verifyAuth(ctx)
-    const projectdata = useQuery(api.projects.getById, { id: args.projectId })
-
-
+    const projectdata = await ctx.db.get("Project", args.projectId);
+    console.log("Projectdata", projectdata)
     if (!projectdata) {
       throw new Error("Project not found !!");
-
     }
-    if (projectdata._id !== ownerId) {
-      throw new Error("Project not found !!");
+    // if (projectdata._id !== ownerId) {
+    //   throw new Error("ownership not found !!");
+    // }
+    if (!args.parentId) {
+      const files = await ctx.db.query("Files").withIndex('by_ProjectId', (q) => q.eq('projectId', args.projectId)).collect();
+      return files
     }
     // get the folder first and then Files
     const files = await ctx.db.query("Files").withIndex('by_ProjectId_parentId', (q) => q.eq('projectId', args.projectId).eq('parentId', args.parentId)).collect();
     return files
   }
-
 })
 
 
@@ -61,25 +62,23 @@ const create = mutation({
     name: v.string(), projectId: v.id("Project"), type: v.union(v.literal("file"), v.literal("folder")), parentId: v.optional(v.id("Files")), binaryFiles: v.optional(v.id("_storage")), content: v.optional(v.string()), updatedAt: v.number()
   },
   handler: async (ctx, args) => {
+    console.log(args.parentId)
     const ownerid = await verifyAuth(ctx);
-
-    const project = useQuery(api.projects.getById, { id: args.projectId })
-
+    const project = await ctx.db.get("Project", args.projectId);
     if (!project) {
       throw new Error('Project not exits')
     }
-    if (project._id !== ownerid) {
+    if (project.ownerId !== ownerid) {
       throw new Error("Unauthorized access of  project")
     }
 
-    //check the same name file exits or not 
 
-    if (args.projectId) {
-
-      const findfile = ctx.db.query('Files')
-        .withIndex('by_ProjectId', (q) => q.eq('projectId', args.projectId))
-        .filter((q) => q.eq("name", args.name))
-
+    if (args.parentId) {
+      const findfile = await ctx.db.query('Files')
+        .withIndex('by_ProjectId_parentId', (q) => q.eq('projectId', args.projectId)
+          .eq('parentId', args.parentId))
+        .filter((q) => q.eq(q.field("name"), args.name))
+        .first()
       if (findfile) {
         console.log(findfile)
         throw new Error("File already exits")
@@ -87,10 +86,12 @@ const create = mutation({
 
 
     } else {
-      const finefile = ctx.db.query('Files')
-        .withIndex('by_Projectname').first()
-      if (finefile) {
-        console.log(finefile)
+      const findfile = ctx.db.query('Files')
+        .withIndex('by_Projectname',
+          (q) => q.eq('name', args.name)
+        ).first()
+      if (findfile) {
+        console.log(findfile)
         throw new Error("File already exits")
       }
     }

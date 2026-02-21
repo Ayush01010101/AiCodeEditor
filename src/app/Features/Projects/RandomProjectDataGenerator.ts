@@ -13,7 +13,6 @@ export function generateUser() {
   } while (name.length < 6 || name.length > 12);
 
   const ownerId = crypto.randomBytes(5).toString('hex');
-
   return { name, ownerId };
 }
 

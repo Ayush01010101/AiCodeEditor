@@ -11,13 +11,11 @@ interface createfileProps {
 }
 
 const usegetFolderFiles = (projectId: Id<'Project'>, parentId?: Id<'Files'>) => {
-
   async function getFolderContent() {
     const args = parentId ? { projectId: projectId, parentId: parentId } : { projectId: projectId }
     const contentfile = useQuery(api.files.getFolderContent, args);
     return contentfile
   }
-
 
   return getFolderContent
 
@@ -25,6 +23,8 @@ const usegetFolderFiles = (projectId: Id<'Project'>, parentId?: Id<'Files'>) => 
 
 
 const useCreatefile = ({ name, type, content, parentId, projectId }: createfileProps) => {
+
+  console.log('usecreatefile trigger')
   const create = useMutation(api.files.create)
   async function createfile() {
     const createdFile = await create({
