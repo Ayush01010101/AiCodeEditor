@@ -1,10 +1,8 @@
 import useStore from "@/zustand/useStore";
-import { useRenamefile } from "./useFiles";
 import { Input } from "@/components/ui/input";
 import { ChevronRight } from "lucide-react";
-import { FC, useRef } from "react";
+import { FC, useState } from "react";
 import { FileIcon, FolderIcon } from "@react-symbols/icons/utils";
-import { useState } from "react";
 import { Id } from "../../../../../convex/_generated/dataModel";
 import { useCreatefile } from "./useFiles";
 interface props {
@@ -15,19 +13,29 @@ interface props {
 
 }
 const Addnewfileinput: FC<props> = ({ projectId, onSubmit, padding, type }) => {
-
-
-
   const [filename, setfilename] = useState<string>("")
-  const fileid = useRef(useStore((state) => state.fileid))
-  console.log('fileid', fileid)
-  const createfile = useCreatefile({
-    name: filename,
-    type: type,
-    content: "",
-    parentId: fileid.current ? fileid.current : undefined,
-    projectId
-  })
+  const fileid = useStore((state) => state.fileid)
+  const clearfileid = useStore((state) => state.clearfileid)
+  const createfile = useCreatefile()
+
+  const handleSubmit = async () => {
+    const trimmedName = filename.trim()
+    if (!trimmedName) {
+      return
+    }
+
+    await createfile({
+      name: trimmedName,
+      type,
+      content: "",
+      parentId: fileid ?? undefined,
+      projectId,
+    })
+    setfilename("")
+    clearfileid()
+    onSubmit()
+  }
+
   return (
     <div >
       <div className={`p-1 flex items-center gap-1 pl-${padding}`}>
@@ -36,11 +44,10 @@ const Addnewfileinput: FC<props> = ({ projectId, onSubmit, padding, type }) => {
           <FolderIcon className="w-6" folderName={filename} />
         </div>}
         <Input
-          onKeyDown={(e) => {
+          value={filename}
+          onKeyDown={async (e) => {
             if (e.key === "Enter") {
-              onSubmit()
-              createfile()
-              onSubmit()
+              await handleSubmit()
             }
 
           }}

@@ -1,7 +1,7 @@
 import useStore from "@/zustand/useStore";
-import { FC, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import Filetrayheader from "./File-tray-header";
-import { usegetFolderFiles } from "./useFiles";
+import { useGetFolderFiles } from "./useFiles";
 import Addnewfileinput from "./Add-new-file-input";
 import { Id } from "../../../../../convex/_generated/dataModel";
 import { useParams } from "next/navigation";
@@ -10,14 +10,37 @@ const FileTrayView: FC = () => {
   const params = useParams();
   const [showinput, setshowinput] = useState<boolean>(false)
   const [filetype, setfiletype] = useState<'file' | 'folder'>('file')
-  const fileid = useStore((state) => state.fileid)
-  const projectId = params.Projectid as Id<"Project">;
+  const clearfileid = useStore((state) => state.clearfileid)
+  const createInputRef = useRef<HTMLDivElement | null>(null)
+  const projectId = params.Projectid as Id<"Project"> | undefined;
+  const getFolderFiles = useGetFolderFiles(projectId);
+  const files = getFolderFiles();
+
+  useEffect(() => {
+    if (!showinput) {
+      return
+    }
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        createInputRef.current &&
+        !createInputRef.current.contains(event.target as Node)
+      ) {
+        setshowinput(false)
+        clearfileid()
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showinput, clearfileid])
 
   if (!projectId) {
     return <div>loading ...</div>
   }
-  const getFolderFiles = usegetFolderFiles(projectId as Id<'Project'>);
-  const files = getFolderFiles();
 
   if (!files) {
     return (
@@ -30,18 +53,27 @@ const FileTrayView: FC = () => {
     <div className="flex flex-col h-full">
       <Filetrayheader
         HandlCreateFile={() => {
-          setshowinput(!showinput)
+          setshowinput(true)
           setfiletype('file')
         }}
         HandleCreateFolder={() => {
-          setshowinput(!!showinput)
+          setshowinput(true)
           setfiletype('folder')
         }}
       />
 
-      {showinput && <Addnewfileinput projectId={projectId} padding={3} type={filetype} onSubmit={() => {
-
-      }} />}
+      {showinput && (
+        <div ref={createInputRef}>
+          <Addnewfileinput
+            projectId={projectId}
+            padding={3}
+            type={filetype}
+            onSubmit={() => {
+              setshowinput(false)
+            }}
+          />
+        </div>
+      )}
 
       <div className="flex-1 overflow-hidden">
         <Renderfiles filedata={files} />

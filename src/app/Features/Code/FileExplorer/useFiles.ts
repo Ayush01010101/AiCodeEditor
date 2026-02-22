@@ -8,21 +8,25 @@ interface createfileProps {
   projectId: Id<'Project'>;
   parentId?: Id<'Files'>;
 }
-const usegetFolderFiles = (
-  projectId: Id<"Project">,
+const useGetFolderFiles = (
+  projectId?: Id<"Project">,
   parentId?: Id<"Files">
 ) => {
-  const data = useQuery(api.files.getFolderContent, {
-    projectId,
-    parentId,
-  });
+  const data = useQuery(
+    api.files.getFolderContent,
+    projectId
+      ? {
+          projectId,
+          parentId,
+        }
+      : "skip"
+  );
 
   return () => data;
 };
-const useCreatefile = ({ name, type, content, parentId, projectId }: createfileProps) => {
-
+const useCreatefile = () => {
   const create = useMutation(api.files.create)
-  async function createfile() {
+  async function createfile({ name, type, content, parentId, projectId }: createfileProps) {
     const createdFile = await create({
       name,
       type,
@@ -68,5 +72,5 @@ const useUpdatefile = (name: string, id: Id<'Files'>) => {
 
 
 export {
-  usegetFolderFiles, useCreatefile, useUpdatefile, useRenamefile
+  useGetFolderFiles, useCreatefile, useUpdatefile, useRenamefile
 }
