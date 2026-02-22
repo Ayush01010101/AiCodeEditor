@@ -1,11 +1,9 @@
-import { FC, useMemo, useState } from "react";
+import { FC, use, useMemo, useState } from "react";
+import useStore from "@/zustand/useStore";
 import { ChevronRight } from "lucide-react";
 import { FileIcon, FolderIcon } from "@react-symbols/icons/utils";
-import { DataModel } from "../../convex/_generated/dataModel";
-
-
+import { DataModel } from "../../../../../convex/_generated/dataModel";
 type FileDoc = DataModel["Files"]["document"];
-
 
 type FileTreeNode = FileDoc & {
   children: FileTreeNode[];
@@ -41,7 +39,9 @@ const RenderFiles: FC<Props> = ({ filedata }) => {
     Set<FileDoc["_id"]>
   >(new Set());
 
+  const addfileid = useStore((state) => state.addfileid)
   const tree = useMemo(() => {
+
     return buildTree(filedata);
   }, [filedata]);
 
@@ -58,11 +58,17 @@ const RenderFiles: FC<Props> = ({ filedata }) => {
     level = 0
   ) => {
     return nodes.map((node) => (
-      <div key={node._id}>
+      < div key={node._id} >
         <div
-          onClick={() =>
+          onClick={() => {
+            if (node.type === 'folder') {
+              console.log('clicked on the folder')
+              addfileid(node._id)
+            }
             node.type === "folder" &&
-            toggleFolder(node._id)
+              toggleFolder(node._id)
+
+          }
           }
           className="flex items-center gap-2 py-1 px-2 hover:bg-zinc-800 text-sm text-zinc-300 cursor-pointer"
           style={{ paddingLeft: `${level * 16}px` }}
@@ -88,7 +94,6 @@ const RenderFiles: FC<Props> = ({ filedata }) => {
               fileName={node.name}
             />
           )}
-
           <span className="truncate">
             {node.name}
           </span>

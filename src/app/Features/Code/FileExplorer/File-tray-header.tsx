@@ -10,7 +10,6 @@ interface props {
   HandlCreateFile: () => void;
   HandleCreateFolder: () => void
 }
-
 const Filetrayheader: FC<props> = ({ HandlCreateFile, HandleCreateFolder }) => {
   const [isfilesopen, setisfilesopen] = useState<boolean>()
   const { Projectid } = useParams()

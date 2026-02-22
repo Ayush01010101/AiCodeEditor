@@ -31,10 +31,18 @@ export default defineSchema({
     name: v.string(),
     projectId: v.id("Project"),
     type: v.union(v.literal("folder"), v.literal("file")),
-    parentId: v.optional(v.string()),
+    parentId: v.optional(v.id('Files')),
     content: v.optional(v.string()),
     binaryFiles: v.optional(v.id("_storage")),
     updatedAt: v.number()
   }).index("by_Projectname", ['name'])
-    .index("by_ProjectId", ["projectId"]).index("by_parentId", ["parentId"]).index('by_ProjectId_parentId', ['projectId', 'parentId'])
+    .index("by_ProjectId", ["projectId"])
+    .index("by_parentId", ["parentId"])
+    .index('by_ProjectId_name', ['projectId', 'name'])
+    .index('by_ProjectId_parentId', ['projectId', 'parentId'])
+    .index("by_ProjectId_parentId_name", [
+      "projectId",
+      "parentId",
+      "name"
+    ])
 }); 

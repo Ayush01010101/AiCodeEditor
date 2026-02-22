@@ -1,8 +1,6 @@
 import { useQuery, useMutation } from "convex/react"
 import { api } from "../../../../../convex/_generated/api"
-import { FunctionReturnType } from "convex/server";
 import { Id } from "../../../../../convex/_generated/dataModel";
-
 interface createfileProps {
   name: string;
   type: "folder" | "file";
@@ -19,19 +17,17 @@ const usegetFolderFiles = (
     parentId,
   });
 
-  // returning function as you wanted
   return () => data;
 };
 const useCreatefile = ({ name, type, content, parentId, projectId }: createfileProps) => {
 
-  console.log('usecreatefile trigger')
   const create = useMutation(api.files.create)
   async function createfile() {
     const createdFile = await create({
       name,
       type,
       content,
-      parentId,
+      parentId: parentId ? parentId : undefined,
       projectId,
       updatedAt: Date.now()
     })
@@ -39,19 +35,17 @@ const useCreatefile = ({ name, type, content, parentId, projectId }: createfileP
     return createdFile
 
   }
-
   return createfile
-
-
 }
-const useRenamefile = (name: string, id: Id<'Files'>) => {
 
+
+
+const useRenamefile = (name: string, id: Id<'Files'>) => {
   const file = useMutation(api.files.rename)
   async function renamefile() {
     const updatedfile = await file({ id, name })
     return updatedfile
   }
-
   return renamefile
 }
 
