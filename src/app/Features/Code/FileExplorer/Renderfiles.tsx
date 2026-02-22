@@ -1,13 +1,22 @@
-import { FC, use, useMemo, useState } from "react";
+import { FC, useEffect, useMemo, useRef, useState } from "react";
 import useStore from "@/zustand/useStore";
 import { ChevronRight } from "lucide-react";
 import { FileIcon, FolderIcon } from "@react-symbols/icons/utils";
+import { Input } from "@/components/ui/input";
 import { DataModel } from "../../../../../convex/_generated/dataModel";
+import { useDeletefile, useRenamefile } from "./useFiles";
+
 type FileDoc = DataModel["Files"]["document"];
 
 type FileTreeNode = FileDoc & {
   children: FileTreeNode[];
 };
+
+type ContextMenuState = {
+  x: number;
+  y: number;
+  nodeId: FileDoc["_id"];
+} | null;
 
 interface Props {
   filedata: FileDoc[]; // flat list from backend
@@ -38,38 +47,91 @@ const RenderFiles: FC<Props> = ({ filedata }) => {
   const [expanded, setExpanded] = useState<
     Set<FileDoc["_id"]>
   >(new Set());
+  const [contextMenu, setContextMenu] = useState<ContextMenuState>(null);
+  const [editingId, setEditingId] = useState<FileDoc["_id"] | null>(null);
+  const [editingName, setEditingName] = useState<string>("");
 
   const addfileid = useStore((state) => state.addfileid)
-  const tree = useMemo(() => {
+  const renameFile = useRenamefile()
+  const deleteFile = useDeletefile()
+  const containerRef = useRef<HTMLDivElement | null>(null)
 
+  const tree = useMemo(() => {
     return buildTree(filedata);
   }, [filedata]);
+
+  useEffect(() => {
+    const handleCloseContextMenu = () => {
+      setContextMenu(null)
+    }
+
+    document.addEventListener("click", handleCloseContextMenu)
+
+    return () => {
+      document.removeEventListener("click", handleCloseContextMenu)
+    }
+  }, [])
 
   const toggleFolder = (id: FileDoc["_id"]) => {
     setExpanded((prev) => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      if (next.has(id)) {
+        next.delete(id)
+      } else {
+        next.add(id)
+      }
       return next;
     });
   };
+
+  const handleRename = async () => {
+    if (!editingId) {
+      return
+    }
+
+    const trimmedName = editingName.trim()
+    if (!trimmedName) {
+      return
+    }
+
+    await renameFile({
+      id: editingId,
+      name: trimmedName,
+    })
+
+    setEditingId(null)
+    setEditingName("")
+  }
+
+  const handleDelete = async (id: FileDoc["_id"]) => {
+    await deleteFile({ id })
+  }
 
   const renderTree = (
     nodes: FileTreeNode[],
     level = 0
   ) => {
     return nodes.map((node) => (
-      < div key={node._id} >
+      <div key={node._id}>
         <div
           onClick={() => {
-            if (node.type === 'folder') {
-              console.log('clicked on the folder')
-              addfileid(node._id)
+            if (editingId === node._id) {
+              return
             }
-            node.type === "folder" &&
-              toggleFolder(node._id)
 
-          }
-          }
+            if (node.type === 'folder') {
+              addfileid(node._id)
+              toggleFolder(node._id)
+            }
+          }}
+          onContextMenu={(e) => {
+            e.preventDefault()
+            setContextMenu({
+              x: e.clientX,
+              y: e.clientY,
+              nodeId: node._id,
+            })
+          }}
           className="flex items-center gap-2 py-1 px-2 hover:bg-zinc-800 text-sm text-zinc-300 cursor-pointer"
           style={{ paddingLeft: `${level * 16}px` }}
         >
@@ -90,14 +152,34 @@ const RenderFiles: FC<Props> = ({ filedata }) => {
             />
           ) : (
             <FileIcon
-              className={`w-6 ml-[${level + 12}]`}
+              className="w-6"
               fileName={node.name}
             />
           )}
-          <span className="truncate">
-            {node.name}
-          </span>
-        </div >
+          {editingId === node._id ? (
+            <Input
+              autoFocus
+              value={editingName}
+              onClick={(e) => e.stopPropagation()}
+              onChange={(e) => setEditingName(e.target.value)}
+              onKeyDown={async (e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  await handleRename()
+                }
+
+                if (e.key === "Escape") {
+                  setEditingId(null)
+                  setEditingName("")
+                }
+              }}
+              className="h-7"
+            />
+          ) : (
+            <span className="truncate">{node.name}</span>
+          )}
+        </div>
 
         {
           node.type === "folder" &&
@@ -105,13 +187,46 @@ const RenderFiles: FC<Props> = ({ filedata }) => {
           node.children.length > 0 &&
           renderTree(node.children, level + 1)
         }
-      </div >
+      </div>
     ));
   };
 
   return (
-    <div className="bg-zinc-900 h-full overflow-y-auto p-2">
+    <div ref={containerRef} className="bg-zinc-900 h-full overflow-y-auto p-2 relative">
       {renderTree(tree)}
+      {contextMenu && (
+        <div
+          style={{ top: contextMenu.y, left: contextMenu.x }}
+          className="fixed z-50 min-w-32 rounded-md border border-zinc-700 bg-zinc-900 py-1 shadow-lg"
+        >
+          <button
+            type="button"
+            className="w-full px-3 py-1.5 text-left text-sm text-zinc-200 hover:bg-zinc-800"
+            onClick={() => {
+              const node = filedata.find((item) => item._id === contextMenu.nodeId)
+              if (!node) {
+                return
+              }
+
+              setEditingId(node._id)
+              setEditingName(node.name)
+              setContextMenu(null)
+            }}
+          >
+            Rename
+          </button>
+          <button
+            type="button"
+            className="w-full px-3 py-1.5 text-left text-sm text-red-400 hover:bg-zinc-800"
+            onClick={async () => {
+              await handleDelete(contextMenu.nodeId)
+              setContextMenu(null)
+            }}
+          >
+            Delete
+          </button>
+        </div>
+      )}
     </div>
   );
 };

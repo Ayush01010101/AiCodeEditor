@@ -8,6 +8,15 @@ interface createfileProps {
   projectId: Id<'Project'>;
   parentId?: Id<'Files'>;
 }
+
+interface renamefileProps {
+  id: Id<'Files'>;
+  name: string;
+}
+
+interface deletefileProps {
+  id: Id<'Files'>;
+}
 const useGetFolderFiles = (
   projectId?: Id<"Project">,
   parentId?: Id<"Files">
@@ -44,9 +53,9 @@ const useCreatefile = () => {
 
 
 
-const useRenamefile = (name: string, id: Id<'Files'>) => {
+const useRenamefile = () => {
   const file = useMutation(api.files.rename)
-  async function renamefile() {
+  async function renamefile({ id, name }: renamefileProps) {
     const updatedfile = await file({ id, name })
     return updatedfile
   }
@@ -69,8 +78,20 @@ const useUpdatefile = (name: string, id: Id<'Files'>) => {
 }
 
 
+const useDeletefile = () => {
+  const file = useMutation(api.files.deleteFile)
+
+  async function deletefile({ id }: deletefileProps) {
+    const deleted = await file({ id })
+    return deleted
+  }
+
+  return deletefile
+}
+
+
 
 
 export {
-  useGetFolderFiles, useCreatefile, useUpdatefile, useRenamefile
+  useGetFolderFiles, useCreatefile, useUpdatefile, useRenamefile, useDeletefile
 }

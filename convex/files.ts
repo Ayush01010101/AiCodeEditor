@@ -1,17 +1,18 @@
 import { mutation } from "./_generated/server";
 import verifyAuth from "./verifyAuth";
 import { verifyFileOwner } from "./verifyOwner";
-import { api } from "./_generated/api";
 import { query } from "./_generated/server";
 import { v } from "convex/values";
-import { useQuery } from "convex/react";
 
 const getFiles = query({
   args: { projectId: v.id("Project") },
   handler: async (ctx, args) => {
-    await verifyAuth(ctx);
-    const project = useQuery(api.projects.getById, { id: args.projectId })
+    const ownerId = await verifyAuth(ctx);
+    const project = await ctx.db.get(args.projectId)
     if (!project) {
+      throw new Error('Project not accessible')
+    }
+    if (project.ownerId !== ownerId) {
       throw new Error('Project not accessible')
     }
     return await ctx.db.query("Files").withIndex('by_ProjectId', (q) => q.eq('projectId', args.projectId)).collect();
@@ -122,46 +123,21 @@ const rename = mutation({
     id: v.id('Files')
   },
   handler: async (ctx, args) => {
-    const ownerid = await verifyAuth(ctx);
-    const file = await ctx.db.get("Files", args.id);
+    const { file } = await verifyFileOwner(ctx, args.id);
 
-    if (!file) {
-      throw new Error("File not found !!")
+    const fileExists = await ctx.db.query('Files')
+      .withIndex("by_ProjectId_parentId_name", (q) =>
+        q.eq('projectId', file.projectId)
+          .eq('parentId', file.parentId)
+          .eq('name', args.name)
+      )
+      .first()
+
+    if (fileExists && fileExists._id !== file._id) {
+      throw new Error("File name already exits !!")
     }
 
-    const projectdata = useQuery(api.projects.getById, { id: file.projectId })
-    if (!projectdata) {
-      throw new Error('Project not exits')
-    }
-    if (projectdata._id !== ownerid) {
-      throw new Error("Unauthorized access of  project")
-    }
-
-    //check the same name file exits or not 
-    if (file.parentId) {
-      const fileExists = await ctx.db.query('Files')
-        .withIndex("by_parentId", (q) => q.eq('parentId', file.parentId))
-        .filter((q) => q.eq(q.field("name"), args.name))
-        .first()
-
-      if (fileExists) {
-        throw new Error("File name already exits !!")
-      } else {
-        return await ctx.db.patch("Files", args.id, { name: args.name })
-      }
-    } else {
-      const fileExists = await ctx.db.query('Files')
-        .withIndex("by_id", (q) => q.eq('_id', args.id))
-        .filter((q) => q.eq(q.field("name"), args.name))
-        .first()
-
-      if (fileExists) {
-        throw new Error("File name already exits !!")
-      } else {
-        return await ctx.db.patch("Files", args.id, { name: args.name })
-      }
-
-    }
+    return await ctx.db.patch("Files", args.id, { name: args.name })
 
 
 
@@ -177,10 +153,46 @@ const updateFileContent = mutation({
     content: v.string()
   },
   handler: async (ctx, args) => {
-
-    const file = await verifyFileOwner(ctx, args.id);
+    await verifyFileOwner(ctx, args.id);
     await ctx.db.patch("Files", args.id, { content: args.content, updatedAt: Date.now() });
 
+  },
+});
+
+
+const deleteFile = mutation({
+  args: {
+    id: v.id("Files"),
+  },
+  handler: async (ctx, args) => {
+    const { file } = await verifyFileOwner(ctx, args.id);
+
+    const stack = [file._id];
+    const idsToDelete: typeof stack = [];
+
+    while (stack.length > 0) {
+      const currentId = stack.pop();
+      if (!currentId) {
+        continue;
+      }
+
+      idsToDelete.push(currentId);
+
+      const children = await ctx.db
+        .query("Files")
+        .withIndex("by_parentId", (q) => q.eq("parentId", currentId))
+        .collect();
+
+      for (const child of children) {
+        stack.push(child._id);
+      }
+    }
+
+    for (const fileId of idsToDelete.reverse()) {
+      await ctx.db.delete(fileId);
+    }
+
+    return { deletedCount: idsToDelete.length };
   },
 });
 
@@ -188,11 +200,9 @@ const updateFileContent = mutation({
 export {
   create,
   rename,
+  deleteFile,
   updateFileContent,
   getFiles,
   getFilebyId,
   getFolderContent
-
 }
-
-
