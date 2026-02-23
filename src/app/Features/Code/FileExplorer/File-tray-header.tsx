@@ -19,7 +19,6 @@ const Filetrayheader: FC<props> = ({ HandlCreateFile, HandleCreateFolder }) => {
     <div>
       <div className="w-full bg-secondary flex items-center justify-between p-3 h-12">
         <div className="flex items-center gap-1">
-          <ChevronRight onClick={() => setisfilesopen(!isfilesopen)} className={cn("cursor-pointer", isfilesopen && "rotate-90")} />
           {(projectdata?.name) ? projectdata.name : <div></div>}
         </div>
         <div className="flex h-full gap-2 items-center">
