@@ -5,13 +5,11 @@ import { FileIcon, FolderIcon } from "@react-symbols/icons/utils";
 import { Input } from "@/components/ui/input";
 import { DataModel } from "../../../../../convex/_generated/dataModel";
 import { useDeletefile, useRenamefile } from "./useFiles";
-
 type FileDoc = DataModel["Files"]["document"];
 
 type FileTreeNode = FileDoc & {
   children: FileTreeNode[];
 };
-
 type ContextMenuState = {
   x: number;
   y: number;
@@ -51,6 +49,8 @@ const RenderFiles: FC<Props> = ({ filedata }) => {
   const [editingId, setEditingId] = useState<FileDoc["_id"] | null>(null);
   const [editingName, setEditingName] = useState<string>("");
   const addfileid = useStore((state) => state.addfileid)
+  const clearfileid = useStore((state) => state.clearfileid)
+  const fileid = useStore((state) => state.fileid)
   const renameFile = useRenamefile()
   const deleteFile = useDeletefile()
   const containerRef = useRef<HTMLDivElement | null>(null)
@@ -119,8 +119,23 @@ const RenderFiles: FC<Props> = ({ filedata }) => {
             }
 
             if (node.type === 'folder') {
-              addfileid(node._id)
+              const isCurrentlyExpanded = expanded.has(node._id)
               toggleFolder(node._id)
+              if (!isCurrentlyExpanded) {
+                // Opening folder
+                addfileid(node._id)
+              } else {
+                // Closing folder
+                if (fileid === node._id) {
+                  clearfileid()
+                }
+              }
+            } else {
+              // Clicked on a file
+              if (!node.parentId) {
+                // If it's a root string file, clear any selected folder
+                clearfileid()
+              }
             }
           }}
           onContextMenu={(e) => {
@@ -131,7 +146,7 @@ const RenderFiles: FC<Props> = ({ filedata }) => {
               nodeId: node._id,
             })
           }}
-          className="flex items-center gap-[6px] py-[3px] pr-2 text-[13px] cursor-pointer w-full transition-colors text-[#cccccc] hover:bg-[#2a2d2e] hover:text-white"
+          className={`flex items-center gap-[6px] py-[3px] pr-2 text-[13px] cursor-pointer w-full transition-colors ${fileid === node._id && node.type === 'folder' ? "bg-[#37373d] text-white" : "text-[#cccccc] hover:bg-[#2a2d2e] hover:text-white"}`}
           style={{ paddingLeft: `${level * 12 + 12}px` }}
         >
           {node.type === "folder" ? (
