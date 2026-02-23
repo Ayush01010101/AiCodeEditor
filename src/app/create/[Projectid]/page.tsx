@@ -12,19 +12,14 @@ const CreateProjectPage = () => {
       <Panel maxSize={350} ><ConversationView /></Panel>
       <Separator />
       <div className='border-l-2 h-screen'></div>
-      <Panel
-      >
+      <Panel>
         <Group>
           <Panel maxSize={250}>
             <FileTrayView />
           </Panel>
           <div className='border-l-2 h-screen'></div>
           <Panel><CodeView /></Panel>
-
-
         </Group>
-
-
       </Panel>
     </Group >
 

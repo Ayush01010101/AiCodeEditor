@@ -7,7 +7,7 @@ export default function CodeView() {
   const [tab, setTab] = useState<Tab>("code")
   return (
     <div className="w-full">
-      <div className="flex items-center gap-1 h-12 px-3 border-b border-border/60 bg-background/70 backdrop-blur">
+      <div className="flex  p-6 items-center gap-1 h-12 bg-[#18191a] px-3 border-b border-border/60  backdrop-blur">
         <button
           type="button"
           onClick={() => setTab("code")}

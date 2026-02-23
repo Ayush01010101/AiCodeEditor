@@ -37,24 +37,36 @@ const Addnewfileinput: FC<props> = ({ projectId, onSubmit, padding, type }) => {
   }
 
   return (
-    <div >
-      <div className={`p-1 flex items-center gap-1 pl-${padding}`}>
-        {type === "file" ? <FileIcon className="w-6" fileName={filename} /> : <div className="flex">
-          <ChevronRight opacity={50} />
-          <FolderIcon className="w-6" folderName={filename} />
-        </div>}
+    <div className="bg-[#18181b] w-full">
+      <div className="flex items-center gap-[6px] py-[3px] pr-2" style={{ paddingLeft: `${padding === 3 ? 12 : padding}px` }}>
+        {type === "file" ? (
+          <>
+            <div className="w-4" /> {/* align with folder's chevron */}
+            <FileIcon className="w-[18px]" fileName={filename || "newfile"} />
+          </>
+        ) : (
+          <>
+            <ChevronRight size={16} className="text-zinc-400 rotate-90 transition-transform duration-200" />
+            <FolderIcon className="w-[18px]" folderName={filename || "newfolder"} />
+          </>
+        )}
         <Input
+          autoFocus
           value={filename}
           onKeyDown={async (e) => {
             if (e.key === "Enter") {
               await handleSubmit()
             }
-
+            if (e.key === "Escape") {
+              setfilename("")
+              onSubmit()
+            }
           }}
-          onChange={(e) => setfilename(e.target.value)} placeholder="name" className="w-full" />
+          onChange={(e) => setfilename(e.target.value)}
+          className="h-6 text-[13px] bg-[#3c3c3c] border-[#007fd4] focus-visible:ring-0 focus-visible:ring-offset-0 px-1 py-0"
+        />
       </div>
-
-    </div >
+    </div>
   )
 
 }

@@ -50,7 +50,6 @@ const RenderFiles: FC<Props> = ({ filedata }) => {
   const [contextMenu, setContextMenu] = useState<ContextMenuState>(null);
   const [editingId, setEditingId] = useState<FileDoc["_id"] | null>(null);
   const [editingName, setEditingName] = useState<string>("");
-
   const addfileid = useStore((state) => state.addfileid)
   const renameFile = useRenamefile()
   const deleteFile = useDeletefile()
@@ -132,27 +131,29 @@ const RenderFiles: FC<Props> = ({ filedata }) => {
               nodeId: node._id,
             })
           }}
-          className="flex items-center gap-2 py-1 px-2 hover:bg-zinc-800 text-sm text-zinc-300 cursor-pointer"
-          style={{ paddingLeft: `${level * 16}px` }}
+          className="flex items-center gap-[6px] py-[3px] pr-2 text-[13px] cursor-pointer w-full transition-colors text-[#cccccc] hover:bg-[#2a2d2e] hover:text-white"
+          style={{ paddingLeft: `${level * 12 + 12}px` }}
         >
-          {node.type === "folder" && (
+          {node.type === "folder" ? (
             <ChevronRight
-              size={14}
-              className={`transition-transform duration-200 ${expanded.has(node._id)
+              size={16}
+              className={`transition-transform duration-200 text-zinc-400 ${expanded.has(node._id)
                 ? "rotate-90"
                 : ""
                 }`}
             />
+          ) : (
+            <div className="w-4" /> // spacing for non-folders
           )}
 
           {node.type === "folder" ? (
             <FolderIcon
-              className="w-6"
+              className="w-4.5"
               folderName={node.name}
             />
           ) : (
             <FileIcon
-              className="w-6"
+              className="w-[18px]"
               fileName={node.name}
             />
           )}
@@ -174,10 +175,10 @@ const RenderFiles: FC<Props> = ({ filedata }) => {
                   setEditingName("")
                 }
               }}
-              className="h-7"
+              className="h-6 text-[13px] bg-[#3c3c3c] border-[#007fd4] focus-visible:ring-0 focus-visible:ring-offset-0 px-1 py-0 w-full check"
             />
           ) : (
-            <span className="truncate">{node.name}</span>
+            <span className="truncate text-sm">{node.name}</span>
           )}
         </div>
 
@@ -192,7 +193,7 @@ const RenderFiles: FC<Props> = ({ filedata }) => {
   };
 
   return (
-    <div ref={containerRef} className="bg-zinc-900 h-full overflow-y-auto p-2 relative">
+    <div ref={containerRef} className="bg-[#18181b] h-full overflow-y-auto relative outline-none select-none">
       {renderTree(tree)}
       {contextMenu && (
         <div

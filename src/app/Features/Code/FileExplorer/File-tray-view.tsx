@@ -50,7 +50,7 @@ const FileTrayView: FC = () => {
     );
   }
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-[#18181b]">
       <Filetrayheader
         HandlCreateFile={() => {
           setshowinput(true)
