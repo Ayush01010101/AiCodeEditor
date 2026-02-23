@@ -1,5 +1,6 @@
 'use client'
 import { useState } from "react"
+import CodeEditorLayout from "./CodeEditorLayout"
 import { GithubIcon } from "@/components/GithubIcon"
 import { cn } from "@/lib/utils"
 type Tab = "code" | "preview"
@@ -38,22 +39,16 @@ export default function CodeView() {
         )}>
           <GithubIcon size={16} />
           Export
-
         </button>
       </div>
-      <div className="p-4">
+      <div className="">
         <div
           className={cn(
             tab === "code" ? "block" : "hidden",
-            "rounded-xl border border-border/60 bg-card"
+            " "
           )}
         >
-          <div className="px-3 py-2 border-b border-border/60 text-xs text-muted-foreground">
-            Code
-          </div>
-          <div className="p-3 font-mono text-sm text-foreground/90 min-h-[240px]">
-            {/* your code editor div */}
-          </div>
+          <CodeEditorLayout />
         </div>
         <div
           className={cn(
@@ -64,7 +59,7 @@ export default function CodeView() {
           <div className="px-3 py-2 border-b border-border/60 text-xs text-muted-foreground">
             Preview
           </div>
-          <div className="p-3 min-h-[240px]">
+          <div className="p-3 min-h-60">
             {/* your preview div */}
           </div>
         </div>

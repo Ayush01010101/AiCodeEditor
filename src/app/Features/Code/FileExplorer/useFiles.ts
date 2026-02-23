@@ -8,7 +8,6 @@ interface createfileProps {
   projectId: Id<'Project'>;
   parentId?: Id<'Files'>;
 }
-
 interface renamefileProps {
   id: Id<'Files'>;
   name: string;
@@ -25,9 +24,9 @@ const useGetFolderFiles = (
     api.files.getFolderContent,
     projectId
       ? {
-          projectId,
-          parentId,
-        }
+        projectId,
+        parentId,
+      }
       : "skip"
   );
 
@@ -64,12 +63,11 @@ const useRenamefile = () => {
 
 
 
-const useUpdatefile = (name: string, id: Id<'Files'>) => {
+const useUpdatefile = () => {
 
   const file = useMutation(api.files.updateFileContent)
 
-  async function updatefile() {
-
+  async function updatefile(name: string, id: Id<'Files'>) {
     const updatedfile = await file({ id, content: name })
     return updatedfile
   }

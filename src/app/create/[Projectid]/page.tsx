@@ -2,7 +2,7 @@
 import ConversationView from '@/app/Features/Conversation/Conversation-view'
 import { Group, Panel } from 'react-resizable-panels'
 import { Separator } from 'react-resizable-panels'
-import CodeView from '@/app/Features/Code/FileExplorer/Code-view'
+import CodeView from '@/app/Features/Code/Editor/Code-view'
 import FileTrayView from '@/app/Features/Code/FileExplorer/File-tray-view'
 import Filetrayheader from '@/app/Features/Code/FileExplorer/File-tray-header'
 
@@ -18,7 +18,12 @@ const CreateProjectPage = () => {
             <FileTrayView />
           </Panel>
           <div className='border-l-2 h-screen'></div>
-          <Panel><CodeView /></Panel>
+          <Panel>
+
+
+            <CodeView />
+
+          </Panel>
         </Group>
       </Panel>
     </Group >

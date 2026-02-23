@@ -1,4 +1,5 @@
 import { FC, useEffect, useMemo, useRef, useState } from "react";
+import useEditorstore from "../Editor/useEditorStore";
 import useStore from "@/zustand/useStore";
 import { ChevronRight } from "lucide-react";
 import { FileIcon, FolderIcon } from "@react-symbols/icons/utils";
@@ -6,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { DataModel } from "../../../../../convex/_generated/dataModel";
 import { useDeletefile, useRenamefile } from "./useFiles";
 type FileDoc = DataModel["Files"]["document"];
-
 type FileTreeNode = FileDoc & {
   children: FileTreeNode[];
 };
@@ -19,8 +19,6 @@ type ContextMenuState = {
 interface Props {
   filedata: FileDoc[]; // flat list from backend
 }
-
-
 function buildTree(
   data: FileDoc[],
   parentId?: FileDoc["_id"]
@@ -54,6 +52,8 @@ const RenderFiles: FC<Props> = ({ filedata }) => {
   const renameFile = useRenamefile()
   const deleteFile = useDeletefile()
   const containerRef = useRef<HTMLDivElement | null>(null)
+  const addfiledataInzustand = useEditorstore((state) => state.addfiledata)
+
 
   const tree = useMemo(() => {
     return buildTree(filedata);
@@ -131,9 +131,12 @@ const RenderFiles: FC<Props> = ({ filedata }) => {
                 }
               }
             } else {
-              // Clicked on a file
+
+              addfiledataInzustand({
+                fileid: node._id,
+                filename: node.name
+              })
               if (!node.parentId) {
-                // If it's a root string file, clear any selected folder
                 clearfileid()
               }
             }
