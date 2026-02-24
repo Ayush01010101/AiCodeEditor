@@ -24,5 +24,4 @@ const CodeEditorLayout: FC = () => {
     </div >
   )
 }
-
 export default CodeEditorLayout

@@ -67,8 +67,9 @@ const useUpdatefile = () => {
 
   const file = useMutation(api.files.updateFileContent)
 
-  async function updatefile(name: string, id: Id<'Files'>) {
-    const updatedfile = await file({ id, content: name })
+  async function updatefile(content: string, id: Id<'Files'>) {
+
+    const updatedfile = await file({ id, content })
     return updatedfile
   }
 
@@ -78,7 +79,6 @@ const useUpdatefile = () => {
 
 const useDeletefile = () => {
   const file = useMutation(api.files.deleteFile)
-
   async function deletefile({ id }: deletefileProps) {
     const deleted = await file({ id })
     return deleted
@@ -88,8 +88,13 @@ const useDeletefile = () => {
 }
 
 
+const useGetfilebyid = (id: Id<'Files'>) => {
+  const file = useQuery(api.files.getFilebyId, { id })
+
+  return file
+}
 
 
 export {
-  useGetFolderFiles, useCreatefile, useUpdatefile, useRenamefile, useDeletefile
+  useGetfilebyid, useGetFolderFiles, useCreatefile, useUpdatefile, useRenamefile, useDeletefile
 }

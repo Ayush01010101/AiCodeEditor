@@ -29,7 +29,6 @@ const getFilebyId = query({
   }
 })
 
-
 const getFolderContent = query({
   args: {
     parentId: v.optional(v.id("Files")),

@@ -20,6 +20,7 @@ export const verifyProjectOwner = async (ctx: Ctx, projectId: Id<"Project">) => 
 };
 
 export const verifyFileOwner = async (ctx: Ctx, fileId: Id<"Files">) => {
+
   const ownerId = await verifyAuth(ctx as QueryCtx);
 
   const file = await ctx.db.get(fileId);
