@@ -76,7 +76,6 @@ const useUpdatefile = () => {
   return updatefile
 }
 
-
 const useDeletefile = () => {
   const file = useMutation(api.files.deleteFile)
   async function deletefile({ id }: deletefileProps) {
