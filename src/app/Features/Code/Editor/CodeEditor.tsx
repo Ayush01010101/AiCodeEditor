@@ -1,6 +1,7 @@
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import getLangaugeExtension from "./LanguagesExtenstion";
-import CodeMinimap from "./CodeMinimap";
+import suggestion from "./Extensions/Suggestions";
+import getLangaugeExtension from "./Extensions/LanguagesExtenstion";
+import CodeMinimap from "./Extensions/CodeMinimap";
 import CodeMirror, { oneDark } from '@uiw/react-codemirror';
 import useEditorstore from "./useEditorStore";
 import { useUpdatefile } from "../FileExplorer/useFiles";
@@ -23,20 +24,29 @@ const CodeEditor: FC = () => {
   const minimap = useMemo(() => CodeMinimap(), [])
   const [filecontent, setfilecontent] = useState<string | undefined>(undefined)
   const hydratedForFileIdRef = useRef<typeof fileId>(undefined);
+  const fileIdRef = useRef<typeof fileId>(fileId);
+  const updatefileRef = useRef(updatefile);
+
+  useEffect(() => {
+    fileIdRef.current = fileId;
+  }, [fileId]);
+
+  useEffect(() => {
+    updatefileRef.current = updatefile;
+  }, [updatefile]);
 
   useEffect(() => {
     setfilecontent(undefined)
     hydratedForFileIdRef.current = undefined;
   }, [fileId])
 
-  const throttledUpdateFile = useMemo(
-    () =>
-      ThrottleRequest((value: string) => {
-        if (!fileId) return;
-        updatefile(value, fileId)
-      }, 4000),
-    [fileId, updatefile]
-  )
+  const throttledUpdateFile = useMemo(() => {
+    return ThrottleRequest((value: string) => {
+      const currentFileId = fileIdRef.current;
+      if (!currentFileId) return;
+      updatefileRef.current(value, currentFileId);
+    }, 4000);
+  }, []);
 
 
   useEffect(() => {
@@ -52,7 +62,6 @@ const CodeEditor: FC = () => {
   const handlechange = useCallback((value: string) => {
     throttledUpdateFile(value)
     setfilecontent(value)
-
   }, [throttledUpdateFile])
   return (
     <div className="p-2 mt-1 h-1/2 overflow-y-clip" >
@@ -61,11 +70,10 @@ const CodeEditor: FC = () => {
         onChange={handlechange}
         height="90vh"
         className="overflow-y-clip"
-        extensions={[extension, minimap]}
+        extensions={[extension, minimap, suggestion(filedata.filename!)]}
         theme={oneDark}
       />
     </div >
   )
 }
-
 export default CodeEditor
