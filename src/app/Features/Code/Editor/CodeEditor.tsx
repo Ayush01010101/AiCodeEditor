@@ -1,4 +1,5 @@
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
+// import { selectSuggestion } from "./Extensions/Suggestions/Selectsuggestion";
 import suggestion from "./Extensions/Suggestions";
 import getLangaugeExtension from "./Extensions/LanguagesExtenstion";
 import CodeMinimap from "./Extensions/CodeMinimap";
