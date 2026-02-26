@@ -1,4 +1,6 @@
 import { EditorView, keymap } from "@codemirror/view"
+
+let activeCleanup: null | (() => void) = null
 export function selectSuggestion() {
   return keymap.of([
     {
@@ -19,7 +21,15 @@ export function selectSuggestion() {
 }
 
 function openInput(view: EditorView, to: number, selectedText: string) {
+  activeCleanup?.()
+  for (const el of document.querySelectorAll('[data-select-suggestion-panel="true"]')) {
+    el.remove()
+  }
+
+  const abortController = new AbortController()
+
   const panel = document.createElement("div")
+  panel.dataset.selectSuggestionPanel = "true"
   panel.style.position = "fixed"
   panel.style.zIndex = "1000"
   panel.style.padding = "12px"
@@ -53,6 +63,10 @@ function openInput(view: EditorView, to: number, selectedText: string) {
   const cancelBtn = document.createElement("button")
   cancelBtn.type = "button"
   cancelBtn.textContent = "Cancel"
+
+  const confirmBtn = document.createElement("button")
+  confirmBtn.type = "button"
+  confirmBtn.textContent = "Confirm"
 
   const styleButton = (btn: HTMLButtonElement, variant: "secondary" | "primary") => {
     btn.style.borderRadius = "10px"
@@ -89,14 +103,25 @@ function openInput(view: EditorView, to: number, selectedText: string) {
   }
 
   styleButton(cancelBtn, "secondary")
+  styleButton(confirmBtn, "primary")
 
   actions.appendChild(cancelBtn)
+  actions.appendChild(confirmBtn)
   panel.appendChild(input)
   panel.appendChild(actions)
 
   const cleanup = () => {
-    document.removeEventListener("pointerdown", onOutsidePointerDown, true)
+    abortController.abort()
     panel.remove()
+    if (activeCleanup === cleanup) activeCleanup = null
+  }
+
+  activeCleanup = cleanup
+
+  const confirm = () => {
+    console.log("Selected:", selectedText)
+    console.log("User Prompt:", input.value)
+    cleanup()
   }
 
 
@@ -108,7 +133,6 @@ function openInput(view: EditorView, to: number, selectedText: string) {
     if (!panel.contains(e.target as Node)) cancel()
   }
 
-  // selection ke end position ka coords
   const coords = view.coordsAtPos(to)
   const baseLeft = coords?.left ?? 12
   const baseTop = (coords?.bottom ?? 12) + 8
@@ -138,18 +162,23 @@ function openInput(view: EditorView, to: number, selectedText: string) {
   })
   input.focus()
 
-  document.addEventListener("pointerdown", onOutsidePointerDown, true)
+  document.addEventListener("pointerdown", onOutsidePointerDown, {
+    capture: true,
+    signal: abortController.signal
+  })
 
-  cancelBtn.addEventListener("click", cancel)
+  cancelBtn.addEventListener("click", cancel, { signal: abortController.signal })
+  confirmBtn.addEventListener("click", confirm, { signal: abortController.signal })
 
   input.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       e.preventDefault()
+      confirm()
       return
     }
     if (e.key === "Escape") {
       e.preventDefault()
       cancel()
     }
-  })
+  }, { signal: abortController.signal })
 }
