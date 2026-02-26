@@ -1,5 +1,4 @@
 import { showMinimap } from "@replit/codemirror-minimap"
-
 let create = (v: any) => {
   const dom = document.createElement('div');
   return { dom }
