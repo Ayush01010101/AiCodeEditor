@@ -98,7 +98,7 @@ export function openInput(view: EditorView, to: number, selectedText: string) {
   activeCleanup = cleanup
 
   const confirm = (inputvalue: string) => {
-    fetcher({ fullcode: view.state.doc.toString(), selectedCode: selectedText, userprompt: inputvalue })
+    fetcher({ fullcode: view.state.doc.toString(), selectedCode: selectedText.toString(), userprompt: inputvalue })
     cleanup()
   }
 
