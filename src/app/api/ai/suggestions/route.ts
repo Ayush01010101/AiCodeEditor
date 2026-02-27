@@ -1,56 +1,66 @@
 import { NextResponse } from "next/server";
-import { google } from '@ai-sdk/google';
+import { google } from "@ai-sdk/google";
 import { generateText } from "ai";
+
 export async function POST(req: Request) {
-  console.log('route trigger')
   try {
     const body = await req.json();
-    const { fullcode, selectedCode, userprompt } = body
+    const { fullcode, selectedCode, userprompt } = body;
+
     if (!fullcode || !selectedCode || !userprompt) {
-      return NextResponse.json({ error: "All fields are required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "All fields are required" },
+        { status: 400 }
+      );
     }
-    const model = google("gemini-2.5-flash")
-    const contextPrompt = `
-You are a code transformation engine inside an IDE.
-Your task is to update the provided file strictly according to the user's instruction.
-Rules you MUST follow:
-1. Return ONLY the updated code.
-2. Do NOT include explanations.
-3. Do NOT include comments describing the change.
-4. Do NOT include markdown formatting.
-5. Do NOT include backticks.
-6. Do NOT include greetings or any extra text.
-7. Do NOT summarize anything.
-8. If no change is needed, return the original file content exactly as it is.
-9. Preserve all existing code formatting, indentation, and structure unless the instruction requires modification.
-10. Never output anything except the final full updated file content.
 
-You are not an assistant. You are a pure code editor.
+    const prompt = `
+You are operating inside a real code editor.
 
-`
-    const userPrompt = `
-      USER-INSTRUCTION
-      ${userprompt}      
+The user has selected a specific portion of code inside a file.
+That selected portion is an isolated editable region.
 
-      FILE-SELECTED-CONTENT
-      ${selectedCode}
+You are ONLY allowed to modify that selected region.
+You are NOT allowed to:
+- Rewrite the entire file
+- Return the entire file
+- Add new imports outside the selected region
+- Modify code outside the selected region
+- Add explanations
+- Add comments
+- Add markdown
+- Add backticks
+- Add extra formatting
 
-      FILE-FULL-CONTENT
-      ${fullcode}
+You must behave exactly like an inline editor that replaces only the selected text.
 
-  
-`
-    const prompt = `${contextPrompt} ${userPrompt}`
+Your output must contain ONLY the updated version of the selected text.
+Nothing else.
 
-    //generatetext from gemeini
+If the instruction requires no change, return the selected text exactly as it is.
+
+USER INSTRUCTION:
+${userprompt}
+
+SELECTED REGION (ONLY THIS CAN BE MODIFIED):
+${selectedCode}
+
+FULL FILE (READ-ONLY CONTEXT — DO NOT MODIFY OR RETURN):
+${fullcode}
+`;
+
     const { text } = await generateText({
-      model: google('gemini-2.5-flash'),
+      model: google("gemini-2.5-flash"),
       prompt,
+      temperature: 0,
     });
-    return NextResponse.json({ data: text });
 
+    return NextResponse.json({ data: text });
   } catch (error) {
-    console.log('error', error)
-    return NextResponse.json({ error: "Something went wrong" }, { status: 500 })
+    console.error("error", error);
+    return NextResponse.json(
+      { error: "Something went wrong" },
+      { status: 500 }
+    );
   }
 }

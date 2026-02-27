@@ -8,7 +8,7 @@ const CodeMinimap = () => {
   return showMinimap.compute(['doc'], (state) => {
     return {
       create,
-      displayText: 'characters',
+      displayText: 'blocks',
       showOverlay: 'always',
       gutters: [{ 1: '#00FF00', 2: '#00FF00' }],
     }
