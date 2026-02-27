@@ -1,4 +1,5 @@
 import { FC } from "react"
+import { Toaster } from "sonner"
 import CodeEditor from "./CodeEditor"
 import { FileIcon } from "@react-symbols/icons/utils"
 import useEditorstore from "./useEditorStore"
@@ -20,6 +21,7 @@ const CodeEditorLayout: FC = () => {
         </div>
 
       </div>
+      <Toaster />
       <CodeEditor />
     </div >
   )
