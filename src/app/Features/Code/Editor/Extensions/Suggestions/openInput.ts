@@ -1,7 +1,7 @@
 import { EditorView } from "@uiw/react-codemirror"
 import fetcher from "./fetcher"
 let activeCleanup: null | (() => void) = null
-export function openInput(view: EditorView, to: number, selectedText: string) {
+export function openInput(view: EditorView, to: number, from: number, selectedText: string) {
   activeCleanup?.()
   for (const el of document.querySelectorAll('[data-select-suggestion-panel="true"]')) {
     el.remove()
@@ -97,13 +97,30 @@ export function openInput(view: EditorView, to: number, selectedText: string) {
 
   activeCleanup = cleanup
 
-  const confirm = (inputvalue: string) => {
-    fetcher({ fullcode: view.state.doc.toString(), selectedCode: selectedText.toString(), userprompt: inputvalue })
+  const confirm = async (inputvalue: string) => {
+    const result: any = await fetcher({ fullcode: view.state.doc.toString(), selectedCode: selectedText.toString(), userprompt: inputvalue })
+    if (result?.data) {
+      console.log('result data', result.data)
+      view.dispatch({
+        changes: {
+          from: from,
+          to: to,
+          insert: result.data
+        }
+      })
+
+
+    }
+    cleanup()
+  }
+  const cancel = () => {
     cleanup()
   }
 
-  const cancel = () => {
-    cleanup()
+  const startConfirm = () => {
+    cancelBtn.remove()
+    confirmBtn.textContent = "Loading ..."
+    void confirm(input.value)
   }
 
   const onOutsidePointerDown = (e: PointerEvent) => {
@@ -145,13 +162,13 @@ export function openInput(view: EditorView, to: number, selectedText: string) {
   })
 
   cancelBtn.addEventListener("click", cancel, { signal: abortController.signal })
-  confirmBtn.addEventListener("click", confirm, { signal: abortController.signal })
+  confirmBtn.addEventListener("click", startConfirm, { signal: abortController.signal })
 
   input.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       e.preventDefault()
 
-      confirm(input.value)
+      startConfirm()
       return
     }
     if (e.key === "Escape") {

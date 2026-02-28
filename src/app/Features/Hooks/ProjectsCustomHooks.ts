@@ -10,6 +10,7 @@ export const useCreateProject = (name: string) => {
   return {
     project
   };
+
 };
 
 export const useGetProjects = () => {

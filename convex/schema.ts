@@ -27,7 +27,6 @@ export default defineSchema({
   ,
 
   Files: defineTable({
-
     name: v.string(),
     projectId: v.id("Project"),
     type: v.union(v.literal("folder"), v.literal("file")),
@@ -44,5 +43,30 @@ export default defineSchema({
       "projectId",
       "parentId",
       "name"
-    ])
-}); 
+    ]),
+
+
+  Conversation: defineTable({
+    projectid: v.id('Project'),
+    name: v.string(),
+    updatedAt: v.number()
+
+  }).index('by_projectid', ['projectid']),
+  Message: defineTable({
+    conversationId: v.id('Conversation'),
+    projectid: v.id('Project'),
+    role: v.union(v.literal("user"), v.literal("assistant")),
+    status: v.union(
+      v.literal("complete"),
+      v.literal("pending"),
+      v.literal("reject"),
+
+    ),
+    content: v.string(),
+    updatedAt: v.number()
+  }).index('by_converstationId', ['conversationId'])
+    .index("by_project_status", ['projectid', 'status'])
+
+  ,
+
+});

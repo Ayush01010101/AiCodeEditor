@@ -7,12 +7,10 @@ export function selectSuggestion() {
       key: "K",
       run(view) {
         const { from, to } = view.state.selection.main
-
         if (from === to) return true
-
         const selectedText = view.state.doc.sliceString(from, to)
 
-        openInput(view, to, selectedText)
+        openInput(view, to, from, selectedText)
 
         return true
       }

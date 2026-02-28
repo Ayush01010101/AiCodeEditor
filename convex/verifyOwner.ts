@@ -13,14 +13,15 @@ export const verifyProjectOwner = async (ctx: Ctx, projectId: Id<"Project">) => 
   }
 
   if (project.ownerId !== ownerId) {
-    throw new Error("file is  not accessible!!");
+    throw new Error("Not Accesable");
   }
 
   return { ownerId, project };
 };
 
-export const verifyFileOwner = async (ctx: Ctx, fileId: Id<"Files">) => {
 
+
+export const verifyFileOwner = async (ctx: Ctx, fileId: Id<"Files">) => {
   const ownerId = await verifyAuth(ctx as QueryCtx);
 
   const file = await ctx.db.get(fileId);
