@@ -13,7 +13,7 @@ export const verifyProjectOwner = async (ctx: Ctx, projectId: Id<"Project">) => 
   }
 
   if (project.ownerId !== ownerId) {
-    throw new Error("file is  not accessible!!");
+    throw new Error("Not Accesable");
   }
 
   return { ownerId, project };
