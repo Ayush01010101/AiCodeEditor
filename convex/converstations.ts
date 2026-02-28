@@ -1,7 +1,6 @@
 import { query } from "./_generated/server";
 import { mutation } from "./_generated/server";
 import { v } from 'convex/values'
-import verifyAuth from "./verifyAuth";
 import { verifyProjectOwner } from "./verifyOwner";
 
 
@@ -39,10 +38,8 @@ export const getMessages = query({
     const messages = ctx.db.query("Message").withIndex("by_converstationId", (q) => q.eq("conversationId", args.id)).collect()
 
     return messages;
-
   }
 })
-
 export const getAllProjectconverstations = query({
   args: {
     projectid: v.id("Project")
@@ -55,7 +52,6 @@ export const getAllProjectconverstations = query({
     return converstation
   }
 })
-
 
 export const getConversationById = query({
   args: {
