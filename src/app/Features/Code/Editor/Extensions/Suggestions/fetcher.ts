@@ -7,16 +7,29 @@ interface args {
   userprompt: string
 }
 
-const fetcher = ({ fullcode, selectedCode, userprompt }: args) => {
-  console.log("call the fetcher")
-  const response = ky.post('/api/ai/suggestions', {
-    timeout: 10000,
-    json: {
-      fullcode,
-      selectedCode,
-      userprompt
+const fetcher = async ({ fullcode, selectedCode, userprompt }: args) => {
+  try {
+    const response: any = await ky.post('/api/ai/suggestions', {
+      timeout: 10000,
+      json: {
+        fullcode,
+        selectedCode,
+        userprompt
+      }
+    }).json()
+    if (!response || response?.data == 'NULL') {
+      toast.error('Failed to generate suggestions')
+      return
     }
-  }).json()
+
+    return response
+
+
+  } catch {
+
+    toast.error("Failed to generate suggestions")
+  }
+
 }
 
 export default fetcher
