@@ -3,7 +3,6 @@ import { mutation } from "./_generated/server";
 import { v } from 'convex/values'
 import { verifyProjectOwner } from "./verifyOwner";
 
-
 export const create = mutation({
   args: {
     name: v.string(),
@@ -21,8 +20,9 @@ export const create = mutation({
     return converstaionId;
   }
 
-
 })
+
+
 
 export const getMessages = query({
   args: {
@@ -34,9 +34,7 @@ export const getMessages = query({
       throw new Error("converstation not found !!")
     }
     await verifyProjectOwner(ctx, converstation.projectid)
-
     const messages = ctx.db.query("Message").withIndex("by_converstationId", (q) => q.eq("conversationId", args.id)).collect()
-
     return messages;
   }
 })
@@ -47,12 +45,11 @@ export const getAllProjectconverstations = query({
   , handler: async (ctx, args) => {
     await verifyProjectOwner(ctx, args.projectid)
     const converstation = await ctx.db.query("Conversation")
-      .withIndex('by_projectid', ({ eq }) => eq('projectid', args.projectid))
+      .withIndex('by_projectid', (q) => q.eq("projectid", args.projectid))
       .collect()
     return converstation
   }
 })
-
 export const getConversationById = query({
   args: {
     id: v.id("Conversation"),

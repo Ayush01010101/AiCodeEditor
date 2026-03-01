@@ -52,6 +52,9 @@ export default defineSchema({
     updatedAt: v.number()
 
   }).index('by_projectid', ['projectid']),
+
+
+
   Message: defineTable({
     conversationId: v.id('Conversation'),
     projectid: v.id('Project'),
@@ -66,7 +69,6 @@ export default defineSchema({
     updatedAt: v.number()
   }).index('by_converstationId', ['conversationId'])
     .index("by_project_status", ['projectid', 'status'])
-
   ,
 
 });
