@@ -149,7 +149,7 @@ const RenderFiles: FC<Props> = ({ filedata }) => {
               nodeId: node._id,
             })
           }}
-          className={`flex items-center gap-[6px] py-[3px] pr-2 text-[13px] cursor-pointer w-full transition-colors ${fileid === node._id && node.type === 'folder' ? "bg-[#37373d] text-white" : "text-[#cccccc] hover:bg-[#2a2d2e] hover:text-white"}`}
+          className={`flex items-center gap-[6px] py-[3px] pr-2 text-[13px] cursor-pointer w-full transition-colors ${fileid === node._id && node.type === 'folder' ? "bg-[#37373d] text-white " : "text-[#cccccc] hover:bg-[#2a2d2e] hover:text-white"}`}
           style={{ paddingLeft: `${level * 12 + 12}px` }}
         >
           {node.type === "folder" ? (
@@ -211,7 +211,7 @@ const RenderFiles: FC<Props> = ({ filedata }) => {
   };
 
   return (
-    <div ref={containerRef} className="bg-[#18181b] h-full overflow-y-auto relative outline-none select-none">
+    <div ref={containerRef} className="bg-[#212329] h-full overflow-y-auto relative outline-none select-none">
       {renderTree(tree)}
       {contextMenu && (
         <div

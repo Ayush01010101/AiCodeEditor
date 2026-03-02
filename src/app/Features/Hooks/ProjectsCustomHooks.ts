@@ -15,7 +15,6 @@ export const useCreateProject = (name: string) => {
 
 export const useGetProjects = () => {
   const getProjects = useQuery(api.projects.get);
-
   return {
     getProjects
   };

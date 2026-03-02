@@ -2,12 +2,8 @@ import { api } from "../../../../convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 import { Id } from "../../../../convex/_generated/dataModel";
 
-
-
 export const useGetAllConversations = (projectid: Id<'Project'>) => {
-
   const getConversations = useQuery(api.converstations.getAllProjectconverstations, { projectid });
-
   return getConversations
 };
 
@@ -23,11 +19,13 @@ export const useGetConversationMessages = (converstationId: Id<'Conversation'>) 
 }
 
 
-export const useCreateConversation = (name: string, projectid: Id<'Project'>) => {
+export const useCreateConversation = () => {
 
   const create = useMutation(api.converstations.create)
-  async function createconversation() {
-    await create({ name, projectid })
+  async function createconversation(name: string, projectid: Id<'Project'>) {
+    const created = await create({ name, projectid })
+    console.log(created)
+    return created
   }
   return createconversation
 }

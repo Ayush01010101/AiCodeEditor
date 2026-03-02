@@ -50,7 +50,7 @@ const FileTrayView: FC = () => {
     );
   }
   return (
-    <div className="flex flex-col h-full bg-[#18181b]">
+    <div className="flex flex-col h-full ">
       <Filetrayheader
         HandlCreateFile={() => {
           setshowinput(true)
@@ -75,7 +75,7 @@ const FileTrayView: FC = () => {
         </div>
       )}
 
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1  overflow-hidden">
         <Renderfiles filedata={files} />
       </div>
     </div>
