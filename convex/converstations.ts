@@ -46,6 +46,7 @@ export const getAllProjectconverstations = query({
     await verifyProjectOwner(ctx, args.projectid)
     const converstation = await ctx.db.query("Conversation")
       .withIndex('by_projectid', (q) => q.eq("projectid", args.projectid))
+      .order('desc')
       .collect()
     return converstation
   }

@@ -132,7 +132,6 @@ const ModelItem = memo(({ m, selectedModel, onSelect }: ModelItemProps) => {
 });
 
 ModelItem.displayName = "ModelItem";
-
 const PromptInputAttachmentsDisplay = () => {
   const attachments = usePromptInputAttachments();
   const handleRemove = useCallback(
@@ -194,7 +193,7 @@ const Example = () => {
   }, []);
 
   return (
-    <div className="text-white text-2xl h-full w-[85%] ">
+    <div className="text-white text-2xl h-fit w-[93%] ">
       <PromptInputProvider>
         <PromptInput className="" globalDrop multiple onSubmit={handleSubmit}>
           <PromptInputAttachmentsDisplay />

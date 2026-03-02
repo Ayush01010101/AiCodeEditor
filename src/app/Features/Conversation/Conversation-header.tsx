@@ -5,19 +5,23 @@ import { Id } from "../../../../convex/_generated/dataModel";
 import { FC } from "react"
 import { useParams } from "next/navigation"
 import { useGetAllConversations, useCreateConversation } from "../Hooks/ConversationCustomHooks";
+import useCurrentConversation from "@/zustand/useCurrentConversation";
 
 const ConversationHeader: FC = () => {
   const createconversation = useCreateConversation()
   const { Projectid } = useParams()
   const allconversation = useGetAllConversations(Projectid as Id<'Project'>)
-  console.log(
-    allconversation[0].name
-  )
+  const currentConversation = useCurrentConversation((state) => state.addConversationId)
+
+  if (allconversation) {
+    if (allconversation.length > 0 && allconversation[0]._id) {
+      currentConversation(allconversation[0]._id)
+    }
+  }
   return (
     <div className="bg-[#18191a] text-sm  flex p-4 font-medium justify-between items-center h-8">
       <p className="opacity-70">
-        {allconversation?.length == 0 ? "new conversation" : "hello"}
-
+        {allconversation ? (allconversation?.length == 0 ? "New Conversation" : allconversation[0].name) : "Loading ..."}
       </p>
       <div className="flex opacity-70 items-center gap-2">
         <Plus onClick={async () => {
@@ -28,12 +32,9 @@ const ConversationHeader: FC = () => {
             if (allconversation?.length <= 1) {
               toast.error("No conversation found !!")
             }
-
           }
-
         }} size={16} cursor={'pointer'} />
       </div>
-
     </div >
 
   )
