@@ -2,7 +2,7 @@
 import { Plus, RotateCcw } from "lucide-react"
 import { toast } from "sonner";
 import { Id } from "../../../../convex/_generated/dataModel";
-import { FC } from "react"
+import { FC, useEffect } from "react"
 import { useParams } from "next/navigation"
 import { useGetAllConversations, useCreateConversation } from "../Hooks/ConversationCustomHooks";
 import useCurrentConversation from "@/zustand/useCurrentConversation";
@@ -13,11 +13,18 @@ const ConversationHeader: FC = () => {
   const allconversation = useGetAllConversations(Projectid as Id<'Project'>)
   const currentConversation = useCurrentConversation((state) => state.addConversationId)
 
-  if (allconversation) {
-    if (allconversation.length > 0 && allconversation[0]._id) {
-      currentConversation(allconversation[0]._id)
-    }
+  if (!Projectid) {
+    return <div>Loading ...</div>
   }
+
+  useEffect(() => {
+    if (allconversation) {
+      if (allconversation.length > 0 && allconversation[0]._id) {
+        currentConversation(allconversation[0]._id)
+      }
+    }
+  }, [allconversation])
+
   return (
     <div className="bg-[#18191a] text-sm  flex p-4 font-medium justify-between items-center h-8">
       <p className="opacity-70">
@@ -27,6 +34,8 @@ const ConversationHeader: FC = () => {
         <Plus onClick={async () => {
           await createconversation('New Conversation', Projectid as Id<'Project'>)
         }} size={20} cursor={'pointer'} />
+
+
         <RotateCcw onClick={() => {
           if (allconversation) {
             if (allconversation?.length <= 1) {
