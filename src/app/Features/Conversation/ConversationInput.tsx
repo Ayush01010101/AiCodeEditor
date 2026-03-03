@@ -2,17 +2,6 @@
 
 import type { ChatStatus } from "ai";
 import type { FormEvent, ReactNode } from "react";
-
-import {
-  Conversation,
-  ConversationContent,
-  ConversationScrollButton,
-} from "@/components/ai-elements/conversation";
-import {
-  Message,
-  MessageContent,
-  MessageResponse,
-} from "@/components/ai-elements/message";
 import type { PromptInputMessage } from "@/components/ai-elements/prompt-input";
 import {
   PromptInput,
@@ -58,7 +47,7 @@ const ConversationInput = ({
     (state) => state.ConversationId
   );
   return (
-    <div className="w-[92%] flex flex-col gap-4 items-center">
+    <div className="w-full flex flex-col gap-4 items-center">
       <PromptInputProvider>
         <PromptInput
           accept={accept}
@@ -87,5 +76,4 @@ const ConversationInput = ({
     </div>
   );
 };
-
 export default ConversationInput;

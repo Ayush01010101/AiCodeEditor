@@ -3,19 +3,7 @@ import type { ChatStatus } from "ai";
 import type { FormEvent, ReactNode } from "react";
 import { useState } from "react";
 import type { PromptInputMessage } from "@/components/ai-elements/prompt-input";
-import {
-  PromptInput,
-  PromptInputActionAddAttachments,
-  PromptInputActionMenu,
-  PromptInputActionMenuContent,
-  PromptInputActionMenuTrigger,
-  PromptInputBody,
-  PromptInputFooter,
-  PromptInputProvider,
-  PromptInputSubmit,
-  PromptInputTextarea,
-  PromptInputTools,
-} from "@/components/ai-elements/prompt-input";
+import Image from "next/image";
 import {
   Conversation as ConversationComponent,
   ConversationContent,
@@ -57,36 +45,37 @@ const Conversation = ({
 }: ConversationInputProps) => {
   const [prompt, setprompt] = useState<string>("")
   const activeConversationId = useCurrentConversation((state) => state.ConversationId)
-  console.log('activeConversationId', activeConversationId)
-  if (!activeConversationId) return <h1>Hello world</h1>
 
   const messages = useGetConversationMessages(activeConversationId)
   return (
     <div className="w-[92%] flex flex-col gap-4  items-center">
-      {!activeConversationId && <div className="h-[62vh]">
-      </div>}
-      {activeConversationId &&
-        <div className="max-w-full mx-auto border   h-[62vh] relative size-full rounded-lg overflow-y-auto ">
-          <div className="flex flex-col h-full">
-            <ConversationComponent>
-              <ConversationContent> {[].map((message) => (
-                <Message key={message} from={message}>
-                  <MessageContent >
-                    <MessageResponse >{message}</MessageResponse>
-                  </MessageContent>
-                </Message>
-              ))}
-              </ConversationContent>
-              <ConversationScrollButton />
-            </ConversationComponent>
 
-          </div>
-        </div >
+      <div className="max-w-full mx-auto border   h-[62vh] relative size-full rounded-lg overflow-y-auto ">
+        <div className="flex flex-col h-full">
+          {activeConversationId ? <ConversationComponent>
+            <ConversationContent> {[].map((message) => (
+              <Message key={message} from={message}>
+                <MessageContent >
+                  <MessageResponse >{message}</MessageResponse>
+                </MessageContent>
+              </Message>
+            ))}
+            </ConversationContent>
+            <ConversationScrollButton />
+          </ConversationComponent>
+            : <div className="text-3xl justify-center flex flex-col items-center   h-full  gap-5">
+
+              <Image width={60} height={20} className="opacity-60" alt="logo" src={'/logo.svg'} />
+              <p className="font-bold text-lg opacity-50">Ask me anything</p>
+            </div>}
 
 
-      }
+        </div>
+      </div >
 
-    </div>
+
+      <ConversationInput />
+    </div >
   );
 };
 
