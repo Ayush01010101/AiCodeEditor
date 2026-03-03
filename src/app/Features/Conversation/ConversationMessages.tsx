@@ -8,30 +8,28 @@ import {
   MessageContent,
   MessageResponse,
 } from "@/components/ai-elements/message";
+import useCurrentConversation from "@/zustand/useCurrentConversation";
+import { useGetConversationMessages } from "../Hooks/ConversationCustomHooks";
 
-const messages = [
-  {
-    id: "1",
-    role: "user" as const,
-    text: "Hey, can you share a quick project update?",
-  },
-  {
-    id: "2",
-    role: "assistant" as const,
-    text: "Sure! The conversation UI is now simplified with two hardcoded messages and a clean structure.",
-  },
-];
 
 const ConversationMessages = () => {
+  const activeConversationId = useCurrentConversation((state) => state.ConversationId)
+  if (!activeConversationId) {
+    return (
+      < div className="h-[62vh]" ></div>
+    )
+  }
+  const messages = useGetConversationMessages(activeConversationId)
+  console.log('message', messages)
   return (
     <div className="max-w-full mx-auto border  h-[62vh] relative size-full rounded-lg overflow-y-auto ">
       <div className="flex flex-col h-full">
-        <Conversation>
+        <Conversation >
           <ConversationContent>
-            {messages.map((message) => (
-              <Message key={message.id} from={message.role}>
+            {[].map((message) => (
+              <Message key={message} from={message}>
                 <MessageContent >
-                  <MessageResponse >{message.text}</MessageResponse>
+                  <MessageResponse >{message}</MessageResponse>
                 </MessageContent>
               </Message>
             ))}

@@ -21,9 +21,6 @@ export const create = mutation({
   }
 
 })
-
-
-
 export const getMessages = query({
   args: {
     id: v.id("Conversation"),
@@ -52,6 +49,7 @@ export const getAllProjectconverstations = query({
   }
 })
 export const getConversationById = query({
+
   args: {
     id: v.id("Conversation"),
     projectId: v.id("Project")

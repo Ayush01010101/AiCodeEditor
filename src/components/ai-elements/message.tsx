@@ -129,7 +129,6 @@ const MessageBranchContext = createContext<MessageBranchContextType | null>(
 
 const useMessageBranch = () => {
   const context = useContext(MessageBranchContext);
-
   if (!context) {
     throw new Error(
       "MessageBranch components must be used within MessageBranch"
