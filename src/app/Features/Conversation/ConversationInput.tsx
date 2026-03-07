@@ -1,7 +1,8 @@
 "use client";
-
 import type { ChatStatus } from "ai";
+import { useState } from "react";
 import type { FormEvent, ReactNode } from "react";
+import ky from 'ky';
 import type { PromptInputMessage } from "@/components/ai-elements/prompt-input";
 import {
   PromptInput,
@@ -17,6 +18,18 @@ import {
   PromptInputTools,
 } from "@/components/ai-elements/prompt-input";
 import useCurrentConversation from "@/zustand/useCurrentConversation";
+
+
+const handlesubmit = async (prompt: string) => {
+  const response = await ky.post('/api/conversation', {
+    json: {
+      prompt
+    }
+  }).json()
+
+  console.log(response)
+}
+
 
 export type ConversationInputProps = {
   onSubmit: (
@@ -46,6 +59,7 @@ const ConversationInput = ({
   const activeConversationId = useCurrentConversation(
     (state) => state.ConversationId
   );
+  const [prompt, setprompt] = useState<string>("");
   return (
     <div className="w-full flex flex-col gap-4 items-center">
       <PromptInputProvider>
@@ -53,7 +67,8 @@ const ConversationInput = ({
           accept={accept}
           globalDrop={globalDrop}
           multiple={multiple}
-          onSubmit={onSubmit}
+          onSubmit={() => handlesubmit(prompt)}
+          onChange={(e) => { setprompt(e.target.value) }}
         >
           <PromptInputBody>
             <PromptInputTextarea placeholder={placeholder} />
