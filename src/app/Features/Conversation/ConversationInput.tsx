@@ -1,25 +1,9 @@
 "use client";
-
+import type { ChatStatus } from "ai";
+import { useState } from "react";
+import type { FormEvent, ReactNode } from "react";
+import ky from 'ky';
 import type { PromptInputMessage } from "@/components/ai-elements/prompt-input";
-import {
-  Attachment,
-  AttachmentPreview,
-  AttachmentRemove,
-  Attachments,
-} from "@/components/ai-elements/attachments";
-import {
-  ModelSelector,
-  ModelSelectorContent,
-  ModelSelectorEmpty,
-  ModelSelectorGroup,
-  ModelSelectorInput,
-  ModelSelectorItem,
-  ModelSelectorList,
-  ModelSelectorLogo,
-  ModelSelectorLogoGroup,
-  ModelSelectorName,
-  ModelSelectorTrigger,
-} from "@/components/ai-elements/model-selector";
 import {
   PromptInput,
   PromptInputActionAddAttachments,
@@ -27,178 +11,67 @@ import {
   PromptInputActionMenuContent,
   PromptInputActionMenuTrigger,
   PromptInputBody,
-  PromptInputButton,
   PromptInputFooter,
   PromptInputProvider,
   PromptInputSubmit,
   PromptInputTextarea,
   PromptInputTools,
-  usePromptInputAttachments,
 } from "@/components/ai-elements/prompt-input";
-import { CheckIcon, GlobeIcon } from "lucide-react";
-import { memo, useCallback, useState } from "react";
+import useCurrentConversation from "@/zustand/useCurrentConversation";
 
-const models = [
-  {
-    chef: "OpenAI",
-    chefSlug: "openai",
-    id: "gpt-4o",
-    name: "GPT-4o",
-    providers: ["openai", "azure"],
-  },
-  {
-    chef: "OpenAI",
-    chefSlug: "openai",
-    id: "gpt-4o-mini",
-    name: "GPT-4o Mini",
-    providers: ["openai", "azure"],
-  },
-  {
-    chef: "Anthropic",
-    chefSlug: "anthropic",
-    id: "claude-opus-4-20250514",
-    name: "Claude 4 Opus",
-    providers: ["anthropic", "azure", "google", "amazon-bedrock"],
-  },
-  {
-    chef: "Anthropic",
-    chefSlug: "anthropic",
-    id: "claude-sonnet-4-20250514",
-    name: "Claude 4 Sonnet",
-    providers: ["anthropic", "azure", "google", "amazon-bedrock"],
-  },
-  {
-    chef: "Google",
-    chefSlug: "google",
-    id: "gemini-2.0-flash-exp",
-    name: "Gemini 2.0 Flash",
-    providers: ["google"],
-  },
-];
 
-const SUBMITTING_TIMEOUT = 200;
-const STREAMING_TIMEOUT = 2000;
-
-interface AttachmentItemProps {
-  attachment: {
-    id: string;
-    type: "file";
-    filename?: string;
-    mediaType?: string;
-    url: string;
-  };
-  onRemove: (id: string) => void;
-}
-
-const AttachmentItem = memo(({ attachment, onRemove }: AttachmentItemProps) => {
-  const handleRemove = useCallback(
-    () => onRemove(attachment.id),
-    [onRemove, attachment.id]
-  );
-  return (
-    <Attachment data={attachment} key={attachment.id} onRemove={handleRemove}>
-      <AttachmentPreview />
-      <AttachmentRemove />
-    </Attachment>
-  );
-});
-
-AttachmentItem.displayName = "AttachmentItem";
-
-interface ModelItemProps {
-  m: (typeof models)[0];
-  selectedModel: string;
-  onSelect: (id: string) => void;
-}
-
-const ModelItem = memo(({ m, selectedModel, onSelect }: ModelItemProps) => {
-  const handleSelect = useCallback(() => onSelect(m.id), [onSelect, m.id]);
-  return (
-    <ModelSelectorItem key={m.id} onSelect={handleSelect} value={m.id}>
-      <ModelSelectorLogo provider={m.chefSlug} />
-      <ModelSelectorName>{m.name}</ModelSelectorName>
-      <ModelSelectorLogoGroup>
-        {m.providers.map((provider) => (
-          <ModelSelectorLogo key={provider} provider={provider} />
-        ))}
-      </ModelSelectorLogoGroup>
-      {selectedModel === m.id ? (
-        <CheckIcon className="ml-auto size-4" />
-      ) : (
-        <div className="ml-auto size-4" />
-      )}
-    </ModelSelectorItem>
-  );
-});
-
-ModelItem.displayName = "ModelItem";
-const PromptInputAttachmentsDisplay = () => {
-  const attachments = usePromptInputAttachments();
-  const handleRemove = useCallback(
-    (id: string) => attachments.remove(id),
-    [attachments]
-  );
-
-  if (attachments.files.length === 0) {
-    return null;
-  }
-
-  return (
-    <Attachments variant="inline">
-      {attachments.files.map((attachment) => (
-        <AttachmentItem
-          attachment={attachment}
-          key={attachment.id}
-          onRemove={handleRemove}
-        />
-      ))}
-    </Attachments>
-  );
-};
-
-const Example = () => {
-  const [model, setModel] = useState<string>(models[0].id);
-  const [modelSelectorOpen, setModelSelectorOpen] = useState(false);
-  const [status, setStatus] = useState<
-    "submitted" | "streaming" | "ready" | "error"
-  >("ready");
-
-  const selectedModelData = models.find((m) => m.id === model);
-
-  const handleModelSelect = useCallback((id: string) => {
-    setModel(id);
-    setModelSelectorOpen(false);
-  }, []);
-
-  const handleSubmit = useCallback((message: PromptInputMessage) => {
-    const hasText = Boolean(message.text);
-    const hasAttachments = Boolean(message.files?.length);
-
-    if (!(hasText || hasAttachments)) {
-      return;
+const handlesubmit = async (prompt: string) => {
+  const response = await ky.post('/api/conversation', {
+    json: {
+      prompt
     }
+  }).json()
 
-    setStatus("submitted");
+  console.log(response)
+}
 
-    // eslint-disable-next-line no-console
-    console.log("Submitting message:", message);
 
-    setTimeout(() => {
-      setStatus("streaming");
-    }, SUBMITTING_TIMEOUT);
-
-    setTimeout(() => {
-      setStatus("ready");
-    }, STREAMING_TIMEOUT);
-  }, []);
-
+export type ConversationInputProps = {
+  onSubmit: (
+    message: PromptInputMessage,
+    event: FormEvent<HTMLFormElement>
+  ) => void | Promise<void>;
+  status?: ChatStatus;
+  onStop?: () => void;
+  accept?: string;
+  multiple?: boolean;
+  globalDrop?: boolean;
+  placeholder?: string;
+  actionMenuContent?: ReactNode;
+  toolsContent?: ReactNode;
+};
+const ConversationInput = ({
+  onSubmit,
+  status,
+  onStop,
+  accept,
+  multiple,
+  globalDrop,
+  placeholder,
+  actionMenuContent,
+  toolsContent,
+}: ConversationInputProps) => {
+  const activeConversationId = useCurrentConversation(
+    (state) => state.ConversationId
+  );
+  const [prompt, setprompt] = useState<string>("");
   return (
-    <div className="text-white text-2xl h-fit w-[93%] ">
+    <div className="w-full flex flex-col gap-4 items-center">
       <PromptInputProvider>
-        <PromptInput className="" globalDrop multiple onSubmit={handleSubmit}>
-          <PromptInputAttachmentsDisplay />
+        <PromptInput
+          accept={accept}
+          globalDrop={globalDrop}
+          multiple={multiple}
+          onSubmit={() => handlesubmit(prompt)}
+          onChange={(e) => { setprompt(e.target.value) }}
+        >
           <PromptInputBody>
-            <PromptInputTextarea />
+            <PromptInputTextarea placeholder={placeholder} />
           </PromptInputBody>
           <PromptInputFooter>
             <PromptInputTools>
@@ -206,17 +79,16 @@ const Example = () => {
                 <PromptInputActionMenuTrigger />
                 <PromptInputActionMenuContent>
                   <PromptInputActionAddAttachments />
+                  {actionMenuContent}
                 </PromptInputActionMenuContent>
               </PromptInputActionMenu>
-
+              {toolsContent}
             </PromptInputTools>
-            <PromptInputSubmit status={status} />
+            <PromptInputSubmit onStop={onStop} status={status} />
           </PromptInputFooter>
         </PromptInput>
       </PromptInputProvider>
     </div>
   );
 };
-
-export default Example;
-
+export default ConversationInput;

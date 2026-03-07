@@ -8,15 +8,16 @@ export const useGetAllConversations = (projectid: Id<'Project'>) => {
 };
 
 
-export const useGetConversationMessages = (converstationId: Id<'Conversation'>) => {
+export const useGetConversationMessages = (
+  converstationId: Id<"Conversation"> | null | undefined
+) => {
+  const messages = useQuery(
+    api.converstations.getMessages,
+    converstationId ? { id: converstationId } : "skip"
+  );
 
-  const getConversations = useQuery(api.converstations.getMessages,
-    {
-      id: converstationId
-    });
-
-  return getConversations;
-}
+  return messages;
+};
 
 
 export const useCreateConversation = () => {
@@ -39,4 +40,3 @@ export const useGetConversationById = (id: Id<'Conversation'>, projectId: Id<'Pr
 
   return getconversation
 }
-
