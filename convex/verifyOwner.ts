@@ -12,6 +12,7 @@ export const verifyProjectOwner = async (ctx: Ctx, projectId: Id<"Project">) => 
     throw new Error("Project not found!!");
   }
 
+  console.log(ownerId)
   if (project.ownerId !== ownerId) {
     throw new Error("Not Accesable");
   }

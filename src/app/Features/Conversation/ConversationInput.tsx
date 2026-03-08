@@ -1,4 +1,5 @@
 "use client";
+import { cosineSimilarity, type ChatStatus } from "ai";
 import type { ChatStatus } from "ai";
 import { useState } from "react";
 import type { FormEvent, ReactNode } from "react";
@@ -19,15 +20,14 @@ import {
 } from "@/components/ai-elements/prompt-input";
 import useCurrentConversation from "@/zustand/useCurrentConversation";
 
-
 const handlesubmit = async (prompt: string) => {
-  const response = await ky.post('/api/conversation', {
+  const response = await ky.post('/api/ai/messages', {
     json: {
-      prompt
+      prompt,
     }
   }).json()
 
-  console.log(response)
+  console.log('responce', response)
 }
 
 

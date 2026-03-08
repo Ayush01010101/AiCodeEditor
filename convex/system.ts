@@ -12,6 +12,8 @@ function validatekey(key: string) {
     throw new Error('Invalid Key')
   }
 
+}
+
 
 }
 
@@ -25,6 +27,7 @@ const CreateMessage = mutation({
     role: v.union(v.literal("user"), v.literal("assistant"))
   },
   handler: async (ctx, args) => {
+    validatekey(args.key)
 
     const message = {
       conversationId: args.ConversationId,
@@ -34,6 +37,11 @@ const CreateMessage = mutation({
       projectid: args.projectid,
       updatedAt: Date.now(),
     };
+    const messageId = await ctx.db.insert("Message", message);
+    return messageId
+  }
+
+
     return ctx.db.insert("Message", message);
   }
 }
