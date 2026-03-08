@@ -1,5 +1,6 @@
 "use client";
 import { cosineSimilarity, type ChatStatus } from "ai";
+import type { ChatStatus } from "ai";
 import { useState } from "react";
 import type { FormEvent, ReactNode } from "react";
 import ky from 'ky';
