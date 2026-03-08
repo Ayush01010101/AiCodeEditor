@@ -2,7 +2,6 @@ import { mutation } from "./_generated/server";
 import { query } from "./_generated/server";
 import { v } from "convex/values";
 
-
 function validatekey(key: string) {
   const enviromentkey = process.env.KODA_KEY;
   if (!key || !enviromentkey) {
@@ -12,9 +11,7 @@ function validatekey(key: string) {
     throw new Error('Invalid Key')
   }
 
-
 }
-
 
 const CreateMessage = mutation({
   args: {
@@ -25,7 +22,7 @@ const CreateMessage = mutation({
     role: v.union(v.literal("user"), v.literal("assistant"))
   },
   handler: async (ctx, args) => {
-
+    validatekey(args.key)
     const message = {
       conversationId: args.ConversationId,
       content: args.content,
@@ -34,8 +31,11 @@ const CreateMessage = mutation({
       projectid: args.projectid,
       updatedAt: Date.now(),
     };
-    return ctx.db.insert("Message", message);
+    const messageId = await ctx.db.insert("Message", message);
+    return messageId
   }
+
+
 }
 )
 export { CreateMessage }
