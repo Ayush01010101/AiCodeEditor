@@ -1,3 +1,4 @@
+import { Conversation } from "@/components/ai-elements/conversation";
 import { defineTable, defineSchema } from "convex/server";
 import { v } from "convex/values";
 
@@ -52,7 +53,6 @@ export default defineSchema({
     updatedAt: v.number()
 
   }).index('by_projectid', ['projectid']),
-
 
 
   Message: defineTable({
