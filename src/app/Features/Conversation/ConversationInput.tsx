@@ -70,14 +70,21 @@ const ConversationInput = ({
     (state) => state.ConversationId
   );
   const [prompt, setprompt] = useState<string>("");
+  const [isprocessing, setisprocessing] = useState<boolean>(false)
   return (
     <div className="w-full flex flex-col gap-4 items-center">
       <PromptInputProvider>
         <PromptInput
           accept={accept}
+
           globalDrop={globalDrop}
           multiple={multiple}
-          onSubmit={() => handlesubmit(prompt, activeConversationId, createConversation, Projectid as Id<'Project'>)}
+          onSubmit={async () => {
+            setisprocessing(true)
+            await handlesubmit(prompt, activeConversationId, createConversation, Projectid as Id<'Project'>)
+            setisprocessing(false)
+
+          }}
           onChange={(e) => { setprompt(e.target.value) }}
         >
           <PromptInputBody>
@@ -94,7 +101,7 @@ const ConversationInput = ({
               </PromptInputActionMenu>
               {toolsContent}
             </PromptInputTools>
-            <PromptInputSubmit onStop={onStop} status={status} />
+            <PromptInputSubmit disabled={isprocessing} onStop={onStop} status={isprocessing ? "submitted" : "ready"} />
           </PromptInputFooter>
         </PromptInput>
       </PromptInputProvider>
