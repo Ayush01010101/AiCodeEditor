@@ -22,7 +22,7 @@ const ConversationMessages = () => {
   const messages = useGetConversationMessages(activeConversationId)
   console.log('message', messages)
   return (
-    <div className="max-w-full mx-auto border  h-[62vh] relative size-full rounded-lg overflow-y-auto ">
+    <div className="max-w-full check  mx-auto border h-[62vh] relative size-full rounded-lg overflow-y-auto ">
       <div className="flex flex-col h-full">
         <Conversation >
           <ConversationContent>

@@ -11,6 +11,7 @@
 import type * as converstations from "../converstations.js";
 import type * as files from "../files.js";
 import type * as projects from "../projects.js";
+import type * as system from "../system.js";
 import type * as tasks from "../tasks.js";
 import type * as verifyAuth from "../verifyAuth.js";
 import type * as verifyOwner from "../verifyOwner.js";
@@ -25,6 +26,7 @@ declare const fullApi: ApiFromModules<{
   converstations: typeof converstations;
   files: typeof files;
   projects: typeof projects;
+  system: typeof system;
   tasks: typeof tasks;
   verifyAuth: typeof verifyAuth;
   verifyOwner: typeof verifyOwner;

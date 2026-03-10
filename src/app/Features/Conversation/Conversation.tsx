@@ -46,23 +46,15 @@ const Conversation = ({
   const [prompt, setprompt] = useState<string>("")
   const activeConversationId = useCurrentConversation((state) => state.ConversationId)
 
-  const messages = useGetConversationMessages(activeConversationId)
+  const allmessages = useGetConversationMessages(activeConversationId)
+  console.log(allmessages)
   return (
     <div className="w-[92%] flex flex-col gap-4  items-center">
 
-      <div className="max-w-full mx-auto border   h-[62vh] relative size-full rounded-lg overflow-y-auto ">
+      <div className="max-w-full mx-auto border h-[62vh] relative size-full rounded-lg overflow-y-auto ">
         <div className="flex flex-col h-full">
-          {activeConversationId ? <ConversationComponent>
-            <ConversationContent> {[].map((message) => (
-              <Message key={message} from={message}>
-                <MessageContent >
-                  <MessageResponse >{message}</MessageResponse>
-                </MessageContent>
-              </Message>
-            ))}
-            </ConversationContent>
-            <ConversationScrollButton />
-          </ConversationComponent>
+          {activeConversationId ? <div>
+          </div>
             : <div className="text-3xl justify-center flex flex-col items-center   h-full  gap-5">
 
               <Image width={60} height={20} className="opacity-60" alt="logo" src={'/logo.svg'} />

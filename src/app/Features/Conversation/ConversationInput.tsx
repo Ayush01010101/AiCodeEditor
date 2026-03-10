@@ -1,6 +1,5 @@
 "use client";
-import { cosineSimilarity, type ChatStatus } from "ai";
-import type { ChatStatus } from "ai";
+import { type ChatStatus } from "ai";
 import { useState } from "react";
 import type { FormEvent, ReactNode } from "react";
 import ky from 'ky';
@@ -19,18 +18,27 @@ import {
   PromptInputTools,
 } from "@/components/ai-elements/prompt-input";
 import useCurrentConversation from "@/zustand/useCurrentConversation";
-
-const handlesubmit = async (prompt: string) => {
+import { useCreateConversation } from "../Hooks/ConversationCustomHooks";
+import { useParams } from "next/navigation";
+import { Id } from "../../../../convex/_generated/dataModel";
+const handlesubmit = async (prompt: string, ConversationId: any, createConversation: any, projectId: Id<'Project'> | undefined) => {
+  if (!projectId) {
+    return;
+  }
+  let id = ""
+  if (!ConversationId) {
+    id = await createConversation('New Conversation', "j979m52fv77n5tw8mg4xv73f49814rsj")
+  }
   const response = await ky.post('/api/ai/messages', {
     json: {
       prompt,
+      projectId,
+      ConversationId: ConversationId ? ConversationId : id
     }
   }).json()
 
   console.log('responce', response)
 }
-
-
 export type ConversationInputProps = {
   onSubmit: (
     message: PromptInputMessage,
@@ -56,6 +64,8 @@ const ConversationInput = ({
   actionMenuContent,
   toolsContent,
 }: ConversationInputProps) => {
+  const createConversation = useCreateConversation()
+  const { Projectid } = useParams()
   const activeConversationId = useCurrentConversation(
     (state) => state.ConversationId
   );
@@ -67,7 +77,7 @@ const ConversationInput = ({
           accept={accept}
           globalDrop={globalDrop}
           multiple={multiple}
-          onSubmit={() => handlesubmit(prompt)}
+          onSubmit={() => handlesubmit(prompt, activeConversationId, createConversation, Projectid as Id<'Project'>)}
           onChange={(e) => { setprompt(e.target.value) }}
         >
           <PromptInputBody>
@@ -88,7 +98,7 @@ const ConversationInput = ({
           </PromptInputFooter>
         </PromptInput>
       </PromptInputProvider>
-    </div>
+    </div >
   );
 };
 export default ConversationInput;
