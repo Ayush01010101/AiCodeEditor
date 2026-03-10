@@ -46,14 +46,15 @@ const Conversation = ({
   const [prompt, setprompt] = useState<string>("")
   const activeConversationId = useCurrentConversation((state) => state.ConversationId)
 
-  const messages = useGetConversationMessages(activeConversationId)
-  console.log('messages', messages)
+  const allmessages = useGetConversationMessages(activeConversationId)
+  console.log(allmessages)
   return (
     <div className="w-[92%] flex flex-col gap-4  items-center">
 
-      <div className="max-w-full mx-auto border check   h-[62vh] relative size-full rounded-lg overflow-y-auto ">
+      <div className="max-w-full mx-auto border h-[62vh] relative size-full rounded-lg overflow-y-auto ">
         <div className="flex flex-col h-full">
-          {activeConversationId ? <div></div>
+          {activeConversationId ? <div>
+          </div>
             : <div className="text-3xl justify-center flex flex-col items-center   h-full  gap-5">
 
               <Image width={60} height={20} className="opacity-60" alt="logo" src={'/logo.svg'} />
