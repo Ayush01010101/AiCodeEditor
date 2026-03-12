@@ -1,4 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
+import { inngest } from "@/inngest/client";
 import { api } from "../../../../../convex/_generated/api";
 import { convexclient } from "@/app/utlity/ConvexClient";
 import { auth } from "@clerk/nextjs/server";
@@ -47,8 +48,20 @@ export async function POST(req: NextRequest, res: NextResponse) {
       role: "assistant"
     })
 
+    //Background job using inngest
+    const backgroundMessageProcessing = await inngest.send({
+      name: 'message/sent',
+      data: {
+        messageId: createAssistantMessage
+      }
+    })
+
+
     return NextResponse.json({
-      data: body
+      data: {
+        sucess: 200,
+        event: backgroundMessageProcessing.ids[0]
+      }
     });
 
   } catch (error) {

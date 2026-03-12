@@ -47,6 +47,7 @@ export const CreateMessage = mutation({
       updatedAt: Date.now(),
     };
     const messageId = await ctx.db.insert("Message", message);
+    await ctx.db.patch("Conversation", args.ConversationId, { updatedAt: Date.now() })
     return messageId
   }
 }
@@ -59,7 +60,8 @@ export const updateMessageContent = mutation({
     key: v.string()
   },
   handler: async (ctx, args) => {
-    const newdata = await ctx.db.patch("Message", args.messageid, { content: args.content })
+    validatekey(args.key)
+    const newdata = await ctx.db.patch("Message", args.messageid, { content: args.content, status: "complete" })
     return newdata
   }
 
