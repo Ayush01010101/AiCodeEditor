@@ -9,10 +9,6 @@ export const messageProcessing = inngest.createFunction(
   {
     id: "messageProcessing",
     cancelOn: [
-      {
-        event: "message/cancel",
-        if: "async.data.messageId==event.data.messageId"
-      }
     ]
   },
 
