@@ -67,4 +67,20 @@ export const updateMessageContent = mutation({
 
 })
 
+export const getPendingMessages = query({
+  args: {
+    projectid: v.id("Project"),
+    key: v.string(),
+  },
+  handler: async (ctx, args) => {
+    validatekey(args.key);
+    return await ctx.db
+      .query("Message")
+      .withIndex("by_project_status", (q) =>
+        q.eq("projectid", args.projectid).eq("status", "pending"),
+      )
+      .collect();
+  },
+});
+
 
