@@ -23,7 +23,7 @@ export const messageProcessing = inngest.createFunction(
     if (!key) {
       throw new Error("you must provide a koda key")
     }
-    await step.sleep('wait for a moment', "2s")
+    await step.sleep('wait for a moment', "50s")
     await step.run("message-processing", async () => {
       await convexclient.mutation(api.system.updateMessageContent, { messageid: messageId, content: "ai is thinking right now..", key })
     })

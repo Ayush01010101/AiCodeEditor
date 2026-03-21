@@ -8,6 +8,7 @@ export async function POST(req: NextRequest) {
   try {
     const body: { projectId: Id<"Project"> } = await req.json();
     const key = process.env.KODA_KEY;
+    console.log('body', body)
 
     if (!key) {
       throw new Error("You must provide a koda key !!");

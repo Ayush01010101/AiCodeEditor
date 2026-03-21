@@ -21,11 +21,21 @@ import useCurrentConversation from "@/zustand/useCurrentConversation";
 import { useCreateConversation } from "../Hooks/ConversationCustomHooks";
 import { useParams } from "next/navigation";
 import { Id } from "../../../../convex/_generated/dataModel";
-const handlesubmit = async (prompt: string, ConversationId: any, createConversation: any, projectId: Id<'Project'> | undefined) => {
+const handleCancel = async (Projectid: Id<'Project'>) => {
+
+  await ky.post('/api/ai/cancel', {
+    json: { ProjectId: Projectid }
+  })
+}
+const handlesubmit = async (prompt: string, ConversationId: any, createConversation: any, projectId: Id<'Project'> | undefined, processing: boolean) => {
   if (!projectId) {
     return;
   }
   let id = ""
+
+  if (processing) {
+    await handleCancel(projectId)
+  }
   if (!ConversationId) {
     id = await createConversation('New Conversation', "j979m52fv77n5tw8mg4xv73f49814rsj")
   }
@@ -83,7 +93,6 @@ const ConversationInput = ({
             setisprocessing(true)
             await handlesubmit(prompt, activeConversationId, createConversation, Projectid as Id<'Project'>)
             setisprocessing(false)
-
           }}
           onChange={(e) => { setprompt(e.target.value) }}
         >
@@ -101,7 +110,7 @@ const ConversationInput = ({
               </PromptInputActionMenu>
               {toolsContent}
             </PromptInputTools>
-            <PromptInputSubmit disabled={isprocessing} onStop={onStop} status={isprocessing ? "submitted" : "ready"} />
+            <PromptInputSubmit disabled={isprocessing} onStop={onStop} status={isprocessing ? "streaming" : "ready"} />
           </PromptInputFooter>
         </PromptInput>
       </PromptInputProvider>
